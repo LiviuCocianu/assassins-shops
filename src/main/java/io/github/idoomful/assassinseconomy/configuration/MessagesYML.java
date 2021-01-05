@@ -1,0 +1,116 @@
+package io.github.idoomful.assassinseconomy.configuration;
+
+import io.github.idoomful.assassinseconomy.DMain;
+import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
+import io.github.idoomful.assassinseconomy.utils.Utils;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public enum MessagesYML {
+    PREFIX("prefix"),
+    RELOAD("reload"),
+    CATEGORIES("categories"),
+    CURRENCIES("currencies"),
+    SPECIFY_AMOUNT("specify-amount");
+
+    String output;
+    FileConfiguration messages;
+
+    MessagesYML(String output) {
+        messages = DMain.getInstance().getConfigs().getFile("messages");
+        this.output = "messages." + output;
+    }
+
+    public String withPrefix(Player player) {
+        String text = MessagesYML.PREFIX.color(player) + messages.getString(output);
+        return Utils.placeholder(player, text);
+    }
+
+    public String color(Player player) {
+        String text = messages.getString(output);
+        return Utils.placeholder(player, text);
+    }
+
+    public void reload() {
+        messages = DMain.getInstance().getConfigs().getFile("messages");
+    }
+
+    public enum Currencies {
+        OPTIONS;
+
+        public String path;
+        public FileConfiguration messages;
+
+        Currencies() {
+            this.path = "currencies";
+            this.messages = MessagesYML.RELOAD.messages;
+        }
+
+        public List<String> getIDs() {
+            return new ArrayList<>(messages.getConfigurationSection(path).getKeys(false));
+        }
+
+        public boolean hasID(String id) {
+            return getIDs().contains(id);
+        }
+
+        public String getString(String id) {
+            if(hasID(id)) return Utils.color(messages.getString(path + "." + id));
+            return "";
+        }
+    }
+
+    public enum Errors {
+        NO_PERMISSION("no-permission"),
+        NOT_ONLINE("not-online"),
+        ITEM_INVALID_CURRENCY("item-invalid-currency"),
+        INVALID_CURRENCY("invalid-currency"),
+        INVALID_SHOP("invalid-shop"),
+        NO_NUMBER("no-number"),
+        TRANSACTION_ERROR("transaction-error"),
+        WRONG_ARGUMENT_COUNT("wrong-argument-count");
+
+        String output;
+        FileConfiguration messages;
+
+        Errors(String output) {
+            messages = MessagesYML.PREFIX.messages;
+            this.output = "errors." + output;
+        }
+
+        public String withPrefix(Player player) {
+            String text = MessagesYML.PREFIX.color(player) + messages.getString(output);
+            return Utils.placeholder(player, text);
+        }
+
+        public String color(Player player) {
+            String text = messages.getString(output);
+            return Utils.placeholder(player, text);
+        }
+    }
+
+    public enum Lists {
+        HELP("help");
+
+        String output;
+        FileConfiguration messages;
+
+        Lists(String output) {
+            messages = MessagesYML.PREFIX.messages;
+            this.output = "lists." + output;
+        }
+
+        public List<String> getStringList(Player player) {
+            return Utils.placeholder(player, messages.getStringList(output));
+        }
+    }
+}

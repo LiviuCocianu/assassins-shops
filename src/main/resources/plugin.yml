@@ -1,0 +1,5 @@
+name: AssassinsShops
+version: ${project.version}
+main: io.github.idoomful.assassinseconomy.DMain
+authors: [iDoomful]
+description: "Assassins component"
