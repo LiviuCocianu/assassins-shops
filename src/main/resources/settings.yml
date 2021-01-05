@@ -105,9 +105,9 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Arc&a!"
       'arrow':
-        icon: "id:arrow amount:5"
+        icon: "id:arrow"
         prices:
-          - "16 bronze"
+          - "3 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sageata&a!"
@@ -246,7 +246,7 @@ shops:
         give-itself: false
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Fumigena&a!"
-          - "ag $player$ 3 1"
+          - "ag $player$ 3 $quantity$"
       'dynamite':
         icon: "id:tnt hideFlags name:&lDinamita lore:&8Arunca_acest_item_pe_jos_si_fugi!|&7Similar_cu_TNT-ul,_dinamita_provoaca_daune|&7jucatorilor,_dar_nu_si_constructiilor._In_functie|&7de_proximitate,_poti_pierde_3-5_inimi.|&7|&cDe_unica_folosinta|&7|&8Cooldown_de_5_secunde!"
         prices:
@@ -254,4 +254,4 @@ shops:
         give-itself: false
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Dinamita&a!"
-          - "ag $player$ 4 1"
+          - "ag $player$ 4 $quantity$"

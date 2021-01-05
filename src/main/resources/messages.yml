@@ -3,7 +3,8 @@ messages:
   reload: "&eConfiguratia a fost reincarcata cu succes!"
   categories: "&7Categorii existente:&f $categories$"
   currencies: "&7Valute existente:&f $currencies$"
-  specify-amount: "&eSpecifica cantitatea pe care vrei s-o cumperi"
+  specify-amount: "&eSpecifica cantitatea pe care vrei s-o cumperi. Scrie &6'cancel'&e sau &6'anulare'&e daca te-ai razgandit"
+  cancel-amount: "&eAi iesit din procesul de cumparare"
 currencies:
   bronze: "&6Moneda de bronz"
   silver: "&7Moneda de argint"
@@ -16,9 +17,11 @@ errors:
   item-invalid-currency: "&cValuta invalida"
   invalid-currency: "&cValuta specificata nu exista in configuratie"
   invalid-shop: "&cNu exista o categorie de shop cu acest nume"
-  no-number: "&cValorea specificata nu este un numar"
-  transaction-error: "&cA aparut o problema in tranzactie"
+  no-number: "&cValorea specificata nu este un numar, incearca din nou"
+  transaction-error: "&cA aparut o problema in tranzactie. Verifica daca ai suficienti bani"
   wrong-argument-count: "&cNumar de argumente incorect"
+  no-negative: "&cValorea specificata trebuie sa fie pozitiva, incearca din nou"
+  unstackable-item: "&cAcest item nu se poata stivui, nu poti cumpara mai mult de unul deodata, incearca valoarea '1'"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsShop  &7&m---------*-"

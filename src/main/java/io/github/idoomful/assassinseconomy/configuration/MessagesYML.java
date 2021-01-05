@@ -20,7 +20,8 @@ public enum MessagesYML {
     RELOAD("reload"),
     CATEGORIES("categories"),
     CURRENCIES("currencies"),
-    SPECIFY_AMOUNT("specify-amount");
+    SPECIFY_AMOUNT("specify-amount"),
+    CANCEL_AMOUNT("cancel-amount");
 
     String output;
     FileConfiguration messages;
@@ -77,7 +78,9 @@ public enum MessagesYML {
         INVALID_SHOP("invalid-shop"),
         NO_NUMBER("no-number"),
         TRANSACTION_ERROR("transaction-error"),
-        WRONG_ARGUMENT_COUNT("wrong-argument-count");
+        WRONG_ARGUMENT_COUNT("wrong-argument-count"),
+        NO_NEGATIVE("no-negative"),
+        UNSTACKABLE_ITEM("unstackable-item");
 
         String output;
         FileConfiguration messages;

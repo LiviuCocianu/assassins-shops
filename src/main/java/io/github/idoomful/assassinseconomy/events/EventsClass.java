@@ -42,6 +42,7 @@ public class EventsClass implements Listener {
 
         Events.listen(main, PlayerQuitEvent.class, e -> {
            chatEvent.remove(e.getPlayer().getUniqueId());
+           targetedItem.remove(e.getPlayer().getUniqueId());
         });
     }
 
@@ -142,6 +143,7 @@ public class EventsClass implements Listener {
                         chatEvent.add(player.getUniqueId());
                         targetedItem.put(player.getUniqueId(), shopItem);
                         player.closeInventory();
+                        player.sendMessage(MessagesYML.SPECIFY_AMOUNT.withPrefix(player));
                     }
                 }
             }
@@ -154,33 +156,55 @@ public class EventsClass implements Listener {
         String message = e.getMessage();
 
         if(chatEvent.contains(player.getUniqueId())) {
-            ShopItem shopItem = targetedItem.get(player.getUniqueId());
             e.setCancelled(true);
+
+            if(message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("anulare")) {
+                chatEvent.remove(player.getUniqueId());
+                targetedItem.remove(player.getUniqueId());
+                player.sendMessage(MessagesYML.CANCEL_AMOUNT.withPrefix(player));
+                return;
+            }
+
+            ShopItem shopItem = targetedItem.get(player.getUniqueId());
 
             try {
                 int amount = Integer.parseInt(message);
 
+                if(amount < 0) {
+                    player.sendMessage(MessagesYML.Errors.NO_NEGATIVE.withPrefix(player));
+                    return;
+                }
+
+                if(shopItem.getIcon().getMaxStackSize() == 1 && amount > 1) {
+                    player.sendMessage(MessagesYML.Errors.UNSTACKABLE_ITEM.withPrefix(player));
+                    return;
+                }
+
                 boolean oneIsFaulty = false;
 
                 for(ConfigPair<Integer, String> pair : shopItem.getPrices()) {
-                    boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey(), player);
+                    boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey() * amount, player);
                     if(!result) oneIsFaulty = true;
                 }
 
                 if(oneIsFaulty) {
                     player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                    chatEvent.remove(player.getUniqueId());
+                    targetedItem.remove(player.getUniqueId());
                     return;
                 }
 
                 if(shopItem.isGivingItself()) {
-                    player.getInventory().addItem(shopItem.getIcon());
+                    ItemStack toGive = shopItem.getIcon().clone();
+                    toGive.setAmount(amount * toGive.getAmount());
+                    player.getInventory().addItem(toGive);
                 }
 
                 for(String cmd : shopItem.getCommands()) {
                     if(cmd.startsWith("[message] ")) {
                         String msg = cmd.replace("[message] ", "")
                                 .replace("$prefix$", MessagesYML.PREFIX.color(player))
-                                .replace("$quantity$", shopItem.getIcon().getAmount() + "")
+                                .replace("$quantity$", amount + "")
                                 .replace("$player$", player.getName());
                         player.sendMessage(Utils.placeholder(player, msg));
                         continue;
@@ -189,12 +213,14 @@ public class EventsClass implements Listener {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                             Utils.placeholder(player,
                                     cmd.replace("$prefix$", MessagesYML.PREFIX.color(player))
-                                            .replace("$quantity$", shopItem.getIcon().getAmount() + "")
+                                            .replace("$quantity$", amount + "")
                                             .replace("$player$", player.getName())
                             )
                     );
                 }
 
+                chatEvent.remove(player.getUniqueId());
+                targetedItem.remove(player.getUniqueId());
             } catch(NumberFormatException ne) {
                 player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(player));
             }
