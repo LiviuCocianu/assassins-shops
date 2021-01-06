@@ -21,7 +21,9 @@ public enum MessagesYML {
     CATEGORIES("categories"),
     CURRENCIES("currencies"),
     SPECIFY_AMOUNT("specify-amount"),
-    CANCEL_AMOUNT("cancel-amount");
+    CANCEL_AMOUNT("cancel-amount"),
+    CONVERTED_UP("converted-up"),
+    CONVERTED_DOWN("converted-down");
 
     String output;
     FileConfiguration messages;
@@ -80,7 +82,9 @@ public enum MessagesYML {
         TRANSACTION_ERROR("transaction-error"),
         WRONG_ARGUMENT_COUNT("wrong-argument-count"),
         NO_NEGATIVE("no-negative"),
-        UNSTACKABLE_ITEM("unstackable-item");
+        UNSTACKABLE_ITEM("unstackable-item"),
+        NO_CONVERTIBLES("no-convertibles"),
+        NOT_ENOUGH_SPACE("not-enough-space");
 
         String output;
         FileConfiguration messages;

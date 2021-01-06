@@ -1,5 +1,6 @@
 package io.github.idoomful.assassinseconomy.configuration;
 
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
 import io.github.idoomful.assassinseconomy.utils.Utils;
@@ -10,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public enum SettingsYML {
@@ -90,6 +92,10 @@ public enum SettingsYML {
             def.setItemMeta(im);
             return def;
         }
+
+        public ItemStack getMarkedItem(String id, int amount) {
+            return NBTEditor.set(getItem(id, amount), id, "CurrencyId");
+        }
     }
 
     public enum CurrencyWorths {
@@ -109,6 +115,12 @@ public enum SettingsYML {
 
         public boolean hasID(String id) {
             return getIDs().contains(id);
+        }
+
+        public HashMap<String, ConfigPair<Integer, String>> getWorthMap() {
+            HashMap<String, ConfigPair<Integer, String>> output = new HashMap<>();
+            getIDs().forEach(id -> output.put(id, getWorth(id)));
+            return output;
         }
 
         public ConfigPair<Integer, String> getWorth(String id) {

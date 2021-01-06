@@ -6,6 +6,7 @@ import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
 import io.github.idoomful.assassinseconomy.gui.ShopGUI;
+import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -147,7 +148,7 @@ public class CommandsClass {
                                 try {
                                     int amount = args.length == 4 ? Integer.parseInt(args[3]) : 1;
                                     target.getInventory().addItem(
-                                            NBTEditor.set(SettingsYML.Currencies.OPTIONS.getItem(args[2], amount), args[2], "CurrencyId")
+                                            SettingsYML.Currencies.OPTIONS.getMarkedItem(args[2], amount)
                                     );
                                 } catch (NumberFormatException ne) {
                                     player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(arg));
@@ -160,6 +161,23 @@ public class CommandsClass {
                         }
                     } else {
                         player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
+                    break;
+                case "convert":
+                    if(player instanceof Player) {
+                        if (player.hasPermission(pluginNameLower + ".command.convert")) {
+                            if(args.length == 2) {
+                                if(args[1].equalsIgnoreCase("up")) {
+                                    CurrencyUtils.convert((Player) player, CurrencyUtils.ConvertWay.UP);
+                                } else if(args[1].equalsIgnoreCase("down")) {
+                                    CurrencyUtils.convert((Player) player, CurrencyUtils.ConvertWay.DOWN);
+                                }
+                            } else {
+                                player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
+                            }
+                        } else {
+                            player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                        }
                     }
                     break;
             }

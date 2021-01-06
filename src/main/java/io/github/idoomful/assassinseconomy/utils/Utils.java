@@ -5,13 +5,14 @@ import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Utils {
     public static String color(String input) {
@@ -38,6 +39,10 @@ public class Utils {
         public static <A> A[] of(A ... el) {
             return el;
         }
+    }
+
+    public static int getEmptySlotCount(Player player) {
+        return (int) Arrays.stream(player.getInventory().getContents()).filter(Objects::isNull).count();
     }
 
     public static String getTimestamp(double seconds, boolean essFormat) {

@@ -57,7 +57,6 @@ public class EventsClass implements Listener {
 
             for(String id : SettingsYML.Currencies.OPTIONS.getIDs()) {
                 if(item.isSimilar(SettingsYML.Currencies.OPTIONS.getItem(id, item.getAmount()))) {
-
                     if(!NBTEditor.contains(item, "CurrencyId")) {
                         e.setCursor(NBTEditor.set(item, id, "CurrencyId"));
                         return;

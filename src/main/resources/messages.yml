@@ -1,10 +1,12 @@
 messages:
   prefix: "&6&lShop &r&7|&f "
-  reload: "&eConfiguratia a fost reincarcata cu succes!"
+  reload: "Configuratia a fost reincarcata cu succes!"
   categories: "&7Categorii existente:&f $categories$"
   currencies: "&7Valute existente:&f $currencies$"
   specify-amount: "&eSpecifica cantitatea pe care vrei s-o cumperi. Scrie &6'cancel'&e sau &6'anulare'&e daca te-ai razgandit"
   cancel-amount: "&eAi iesit din procesul de cumparare"
+  converted-up: "Toate monezile din inventarul tau au fost convertite de la cele mai &emici&f la cele mai &6mari&f."
+  converted-down: "Toate monezile din inventarul tau au fost convertite de la cele mai &6mari&f la cele mai &emici&f."
 currencies:
   bronze: "&6Moneda de bronz"
   silver: "&7Moneda de argint"
@@ -22,6 +24,8 @@ errors:
   wrong-argument-count: "&cNumar de argumente incorect"
   no-negative: "&cValorea specificata trebuie sa fie pozitiva, incearca din nou"
   unstackable-item: "&cAcest item nu se poata stivui, nu poti cumpara mai mult de unul deodata, incearca valoarea '1'"
+  no-convertibles: "&cNu ai destule monede pentru a converti"
+  not-enough-space: "&cNu ai destul spatiu in inventar"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsShop  &7&m---------*-"
