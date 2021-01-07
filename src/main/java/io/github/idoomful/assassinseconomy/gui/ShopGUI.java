@@ -4,7 +4,6 @@ import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
-import io.github.idoomful.assassinseconomy.configuration.ShopItem;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ShopGUI extends Paginable implements MyGUI, InventoryHolder {
     private final Inventory inventory;
@@ -24,7 +22,7 @@ public class ShopGUI extends Paginable implements MyGUI, InventoryHolder {
     private final Player player;
 
     public ShopGUI(String category, Player player) {
-        inventory = Bukkit.createInventory(player, SettingsYML.SHOP_ROWS.getInt() * 9, SettingsYML.Shops.OPTIONS.getCategoryTitle(category));
+        inventory = Bukkit.createInventory(this, SettingsYML.SHOP_ROWS.getInt() * 9, SettingsYML.Shops.OPTIONS.getCategoryTitle(category));
         this.category = category;
         this.player = player;
         openInventory(player);

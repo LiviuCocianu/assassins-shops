@@ -23,7 +23,11 @@ public enum MessagesYML {
     SPECIFY_AMOUNT("specify-amount"),
     CANCEL_AMOUNT("cancel-amount"),
     CONVERTED_UP("converted-up"),
-    CONVERTED_DOWN("converted-down");
+    CONVERTED_DOWN("converted-down"),
+    CREATING_BANK("creating-bank"),
+    CURRENCY_FORMAT("currency-format"),
+    CURRENCY_SEPARATOR("currency-separator"),
+    CURRENCY_SAVED("currency-saved");
 
     String output;
     FileConfiguration messages;
@@ -84,7 +88,8 @@ public enum MessagesYML {
         NO_NEGATIVE("no-negative"),
         UNSTACKABLE_ITEM("unstackable-item"),
         NO_CONVERTIBLES("no-convertibles"),
-        NOT_ENOUGH_SPACE("not-enough-space");
+        NOT_ENOUGH_SPACE("not-enough-space"),
+        NO_BANK("no-bank");
 
         String output;
         FileConfiguration messages;

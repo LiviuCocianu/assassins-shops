@@ -5,8 +5,12 @@ messages:
   currencies: "&7Valute existente:&f $currencies$"
   specify-amount: "&eSpecifica cantitatea pe care vrei s-o cumperi. Scrie &6'cancel'&e sau &6'anulare'&e daca te-ai razgandit"
   cancel-amount: "&eAi iesit din procesul de cumparare"
-  converted-up: "Toate monezile din inventarul tau au fost convertite de la cele mai &emici&f la cele mai &6mari&f."
-  converted-down: "Toate monezile din inventarul tau au fost convertite de la cele mai &6mari&f la cele mai &emici&f."
+  converted-up: "Toate monedele din inventarul tau au fost convertite de la cele mai &emici&f la cele mai &6mari&f."
+  converted-down: "Toate monedele din inventarul tau au fost convertite de la cele mai &6mari&f la cele mai &emici&f."
+  creating-bank: "&eSe creeaza o banca pentru tine.."
+  currency-format: "&ex$amount$ $currency$"
+  currency-separator: "&f, "
+  currency-saved: "Ai adaugat urmatoarele monede in banca: $currencies$"
 currencies:
   bronze: "&6Moneda de bronz"
   silver: "&7Moneda de argint"
@@ -26,6 +30,7 @@ errors:
   unstackable-item: "&cAcest item nu se poata stivui, nu poti cumpara mai mult de unul deodata, incearca valoarea '1'"
   no-convertibles: "&cNu ai destule monede pentru a converti"
   not-enough-space: "&cNu ai destul spatiu in inventar"
+  no-bank: "&cAcest jucator nu are o banca"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsShop  &7&m---------*-"

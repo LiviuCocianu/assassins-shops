@@ -21,7 +21,7 @@ price-lore:
   - "&fPret:"
   - "&8» $prices$"
 
-# Pagination settings
+# Pagination settings for the shop
 skipping-points: [0, 8, 9, 17, 18, 26, 27]
 
 items-per-page: 21
@@ -31,6 +31,22 @@ next-button-slots: [8, 17, 26]
 
 previous-page-icon: "id:stained_glass_pane:1 name:&aPagina_anterioara"
 previous-button-slots: [0, 9, 18]
+
+bank:
+  title: "Depoziteaza monedele aici"
+  rows: 6
+  items:
+    '#': "id:stained_glass_pane:7 name:_"
+
+    # Don't change this symbol
+    'd': "id:emerald name:&aDepoziteaza lore:&7Click_aici_pentru_a_depozita|&7monedele_introduse_in_banca!"
+  layout:
+    - "- - - - - - - - -"
+    - "- - - - - - - - -"
+    - "- - - - - - - - -"
+    - "# # # # # # # # #"
+    - "# # # # d # # # #"
+    - "# # # # # # # # #"
 
 shops:
   combat:

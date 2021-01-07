@@ -60,6 +60,44 @@ public enum SettingsYML {
         return ItemBuilder.build(settings.getString(path));
     }
 
+    public enum Bank {
+        TITLE("title"),
+        ROWS("rows"),
+        ITEMS("items"),
+        LAYOUT("layout");
+
+        public String path;
+        public FileConfiguration settings;
+
+        Bank(String string) {
+            this.path = "bank." + string;
+            this.settings = SettingsYML._OPTIONS.settings;
+        }
+
+        public int getInt() {
+            return settings.getInt(path);
+        }
+        public String getString(Player player) {
+            return Utils.placeholder(player, settings.getString(path));
+        }
+        public List<String> getStringList(Player player) {
+            return Utils.placeholder(player, settings.getStringList(path));
+        }
+        public List<String> getSymbols() {
+            return new ArrayList<>(settings.getConfigurationSection(path).getKeys(false));
+        }
+
+        public List<String> getItemList() {
+            List<String> output = new ArrayList<>();
+            getSymbols().forEach(s -> output.add(s + " " + settings.getString(path + "." + s)));
+            return output;
+        }
+
+        public ItemStack getItem(String symbol) {
+            return ItemBuilder.build(settings.getString(path + "." + symbol));
+        }
+    }
+
     public enum Currencies {
         OPTIONS;
 

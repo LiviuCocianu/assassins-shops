@@ -1,9 +1,11 @@
 package io.github.idoomful.assassinseconomy;
 
+import com.google.gson.Gson;
 import io.github.idoomful.assassinseconomy.commands.CommandsClass;
 import io.github.idoomful.assassinseconomy.configuration.ConfigManager;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
+import io.github.idoomful.assassinseconomy.data.SQL.Lite;
 import io.github.idoomful.assassinseconomy.events.EventsClass;
 import io.github.idoomful.assassinseconomy.gui.ShopGUI;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,13 +23,15 @@ public class DMain extends JavaPlugin {
 
     private final HashMap<String, List<ShopItem>> shopCategories = new HashMap<>();
     private final HashMap<UUID, ShopGUI> shops = new HashMap<>();
-    //private ManagerSQL<DMain> sql;
+    private Lite sql;
+
+    private Gson gson = new Gson();
 
     @Override
     public void onEnable() {
         plugin = this;
         conf = new ConfigManager<>(this);
-        // sql = new ManagerSQL<>(this);
+        sql = new Lite(this);
         new EventsClass(this);
         new CommandsClass(this);
 
@@ -62,7 +66,10 @@ public class DMain extends JavaPlugin {
     public HashMap<UUID, ShopGUI> getOpenedShops() {
         return shops;
     }
-    /*public ManagerSQL<DMain> getSQL() {
+    public Lite getSQL() {
         return sql;
-    }*/
+    }
+    public Gson getGson() {
+        return gson;
+    }
 }

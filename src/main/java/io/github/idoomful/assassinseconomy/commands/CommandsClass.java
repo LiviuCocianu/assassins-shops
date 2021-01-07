@@ -5,6 +5,7 @@ import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
+import io.github.idoomful.assassinseconomy.gui.BankGUI;
 import io.github.idoomful.assassinseconomy.gui.ShopGUI;
 import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
 import io.github.idoomful.assassinseconomy.utils.Utils;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CommandsClass {
@@ -123,17 +125,20 @@ public class CommandsClass {
         new ModularCommand(settings2, (player, args) -> {
             Player arg = player instanceof Player ? (Player) player : null;
 
-            if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-                MessagesYML.Lists.HELP.getStringList(arg).forEach(player::sendMessage);
-                return;
-            }
-
             if(!player.hasPermission(pluginNameLower + ".command")) {
                 player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                 return;
             }
 
+            if(args.length == 0) {
+
+                return;
+            }
+
             switch(args[0]) {
+                case "help":
+                    MessagesYML.Lists.HELP.getStringList(arg).forEach(player::sendMessage);
+                    break;
                 case "give":
                     if (player.hasPermission(pluginNameLower + ".command.give")) {
                         if(args.length >= 3) {
@@ -178,6 +183,47 @@ public class CommandsClass {
                         } else {
                             player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                         }
+                    }
+                    break;
+                case "bank":
+                    if (player.hasPermission(pluginNameLower + ".command.bank")) {
+                        if(args.length == 2) {
+                            plugin.getSQL().exists(args[1], result -> {
+                                Player target = Bukkit.getPlayer(args[1]);
+
+                                if(result) new BankGUI(target);
+                                else {
+                                    if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
+                                        player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
+
+                                        HashMap<String, Integer> map = new HashMap<>();
+                                        SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                        plugin.getSQL().addEntry(player.getName(), map);
+
+                                        new BankGUI(target);
+                                        return;
+                                    }
+
+                                    player.sendMessage(MessagesYML.Errors.NO_BANK.withPrefix(null));
+                                }
+                            });
+                        } else if(args.length == 1 && player instanceof Player) {
+                            Player pl = (Player) player;
+
+                            plugin.getSQL().exists(pl.getName(), result -> {
+                                if(!result) {
+                                    player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
+
+                                    HashMap<String, Integer> map = new HashMap<>();
+                                    SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                    plugin.getSQL().addEntry(pl.getName(), map);
+                                }
+
+                                new BankGUI(pl);
+                            });
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                     }
                     break;
             }

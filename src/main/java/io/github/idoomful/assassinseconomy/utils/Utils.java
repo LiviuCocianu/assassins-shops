@@ -8,11 +8,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Utils {
     public static String color(String input) {
@@ -43,6 +43,25 @@ public class Utils {
 
     public static int getEmptySlotCount(Player player) {
         return (int) Arrays.stream(player.getInventory().getContents()).filter(Objects::isNull).count();
+    }
+
+    public static void sendActionText(Player player, String message){
+        try {
+            Class<?> playOutChat = getNMSclass("PacketPlayOutChat");
+            Class<?> ichat = getNMSclass("IChatBaseComponent");
+            Class<?> chatComp = getNMSclass("ChatMessage");
+
+            Object baseComp = chatComp.getConstructor(String.class, Object[].class).newInstance(message, new Object[] {});
+            Object packet = playOutChat.getConstructor(ichat, byte.class).newInstance(baseComp, (byte) 2);
+
+            Class<?> craftPlayer = getCraftClass("entity.CraftPlayer");
+            Class<?> packetClass = getNMSclass("Packet");
+            Object handle = craftPlayer.cast(player).getClass().getMethod("getHandle").invoke(craftPlayer.cast(player));
+            Object conObj = handle.getClass().getField("playerConnection").get(handle);
+            conObj.getClass().getMethod("sendPacket", packetClass).invoke(conObj, packet);
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String getTimestamp(double seconds, boolean essFormat) {
@@ -103,6 +122,11 @@ public class Utils {
     static Class<?> getNMSclass(String name) throws ClassNotFoundException {
         final String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
         return Class.forName("net.minecraft.server." + version + "." + name);
+    }
+
+    static Class<?> getCraftClass(String name) throws ClassNotFoundException {
+        final String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        return Class.forName("org.bukkit.craftbukkit." + version + "." + name);
     }
 
     public static String integerToRoman(int input) {

@@ -6,10 +6,14 @@ import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
+import io.github.idoomful.assassinseconomy.gui.BankGUI;
+import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
+import io.github.idoomful.assassinseconomy.gui.ShopGUI;
 import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
 import io.github.idoomful.assassinseconomy.utils.Events;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,10 +24,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class EventsClass implements Listener {
     private final DMain main;
@@ -80,18 +81,16 @@ public class EventsClass implements Listener {
     }
 
     @EventHandler
-    public void onShopClick(InventoryClickEvent e) {
+    public void onGUIClick(InventoryClickEvent e) {
         if(e.getClickedInventory() == null) return;
         if(e.getCurrentItem() == null) return;
+        if(e.getCurrentItem().getType() == Material.AIR) return;
 
         Player player = (Player) e.getWhoClicked();
+        ItemStack clicked = e.getCurrentItem();
 
-        if(!main.getOpenedShops().containsKey(player.getUniqueId())) return;
-
-        if(e.getClickedInventory().getHolder().equals(main.getOpenedShops().get(player.getUniqueId()).getInventory().getHolder())) {
+        if(e.getClickedInventory().getHolder() instanceof ShopGUI) {
             e.setCancelled(true);
-
-            ItemStack clicked = e.getCurrentItem();
 
             if(clicked.isSimilar(SettingsYML.NEXT_PAGE_ICON.getItem())) {
                 main.getOpenedShops().get(player.getUniqueId()).nextPage();
@@ -145,6 +144,48 @@ public class EventsClass implements Listener {
                         player.sendMessage(MessagesYML.SPECIFY_AMOUNT.withPrefix(player));
                     }
                 }
+            }
+        } else if(e.getView().getTopInventory().getHolder() instanceof BankGUI
+                && (e.getView().getBottomInventory().equals(e.getClickedInventory())
+                || e.getView().getTopInventory().equals(e.getClickedInventory()))) {
+
+            HashMap<String, Integer> toDeposit = new HashMap<>();
+
+            // Check if they clicked on the deposit icon
+            if(clicked.isSimilar(SettingsYML.Bank.ITEMS.getItem("d"))) {
+                for(ItemStack item : e.getClickedInventory().getContents()) {
+                    if(item == null) continue;
+
+                    if(NBTEditor.contains(item, "CurrencyId")) {
+                        String currency = NBTEditor.getString(item, "CurrencyId");
+                        if(!toDeposit.containsKey(currency)) toDeposit.put(currency, 0);
+                        toDeposit.put(currency, toDeposit.get(currency) + item.getAmount());
+                    }
+                }
+
+                StringBuilder currencies = new StringBuilder();
+
+                int index = 0;
+                for(Map.Entry<String, Integer> entry : toDeposit.entrySet()) {
+                    index++;
+                    String currency = entry.getKey();
+                    int amount = entry.getValue();
+
+                    main.getSQL().addCurrency(player.getName(), currency, amount);
+
+                    currencies.append(MessagesYML.CURRENCY_FORMAT.color(player)
+                            .replace("$amount$", amount + "")
+                            .replace("$currency$", MessagesYML.Currencies.OPTIONS.getString(currency))
+                    );
+
+                    if(index != toDeposit.size()) currencies.append(MessagesYML.CURRENCY_SEPARATOR.color(player));
+                }
+
+                player.closeInventory();
+                player.sendMessage(MessagesYML.CURRENCY_SAVED.withPrefix(player)
+                        .replace("$currencies$", Utils.color(currencies.toString())));
+            } else if(!NBTEditor.contains(clicked, "CurrencyId")) {
+                e.setCancelled(true);
             }
         }
     }
