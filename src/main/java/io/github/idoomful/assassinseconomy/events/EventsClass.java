@@ -16,6 +16,8 @@ import io.github.idoomful.assassinseconomy.utils.Utils;
 import javafx.scene.layout.Priority;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +30,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
 import java.util.*;
 
 import static org.bukkit.event.EventPriority.MONITOR;
@@ -342,8 +345,53 @@ public class EventsClass implements Listener {
             if(NBTEditor.contains(inHand, "GadgetName")) {
                 String name = NBTEditor.getString(inHand, "GadgetName");
 
-                if(SettingsYML.RepairCosts.OPTIONS.isGadgetReplenishable(name)) {
+                if(Bukkit.getPluginManager().isPluginEnabled("AtomGadgets")) {
+                    if(SettingsYML.RepairCosts.OPTIONS.isGadgetReplenishable(name)) {
+                        if(!inHand.hasItemMeta()) return;
+                        if(!inHand.getItemMeta().hasLore()) return;
 
+                        boolean oneIsFaulty = false;
+
+                        for(ConfigPair<Integer, String> pair : SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name)) {
+                            boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey(), player);
+                            if(!result) oneIsFaulty = true;
+                        }
+
+                        if(oneIsFaulty) {
+                            player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                            return;
+                        }
+
+                        File loreFile = new File(main.getDataFolder().getPath().replace("AssassinsShops", "AtomGadgets/messages.yml"));
+                        FileConfiguration loreConfig = YamlConfiguration.loadConfiguration(loreFile);
+
+                        ItemMeta im = inHand.getItemMeta();
+                        List<String> newLore = im.getLore();
+                        int newUses = NBTEditor.getInt(inHand, "uses");
+                        String usesLine = loreConfig.getString("lore-additions.uses");
+
+                        int given = SettingsYML.RepairCosts.OPTIONS.getGivenUses(name);
+
+                        for(String line : inHand.getItemMeta().getLore()) {
+                            if(line.startsWith(Utils.color(usesLine.replace("$uses$", "")))) {
+                                int index = newLore.indexOf(line);
+
+                                newLore.set(index, Utils.color(usesLine.replace("$uses$", (newUses + given) + "")));
+                                break;
+                            }
+                        }
+
+                        im.setLore(newLore);
+                        inHand.setItemMeta(im);
+
+                        if(Utils.usesVersionBetween("1.4.x", "1.8.x")) {
+                            player.getInventory().setItemInHand(NBTEditor.set(inHand, newUses + given, "uses"));
+                        } else {
+                            player.getInventory().setItemInMainHand(NBTEditor.set(inHand, newUses + given, "uses"));
+                        }
+
+                        player.sendMessage(MessagesYML.REPAIRED.withPrefix(player));
+                    }
                 }
             }
         }

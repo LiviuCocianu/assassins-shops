@@ -11,6 +11,7 @@ messages:
   currency-format: "&ex$amount$ $currency$"
   currency-separator: "&f, "
   currency-saved: "Ai adaugat urmatoarele monede in banca: $currencies$"
+  repaired: "Ai reparat acest item cu succes"
 currencies:
   bronze: "&6Moneda de bronz"
   silver: "&7Moneda de argint"

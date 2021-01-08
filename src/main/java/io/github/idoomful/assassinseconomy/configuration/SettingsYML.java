@@ -243,7 +243,7 @@ public enum SettingsYML {
         }
 
         public boolean isGadgetReplenishable(String id) {
-            return settings.getConfigurationSection(path + "gadgets." + id).getKeys(false).contains(id);
+            return settings.getConfigurationSection(path + "gadgets").getKeys(false).contains(id);
         }
 
         public int getGivenUses(String id) {
