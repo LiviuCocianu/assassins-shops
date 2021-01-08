@@ -12,27 +12,23 @@ currency-worths:
   'gold_bag': "10 gold"
   'crystal': "10 gold_bag"
 
-# The size of the shop GUI
-shop-rows: 3
+shop-options:
+  rows: 3
+  price-format: "&7x$amount$ $currency$"
+  price-lore:
+    - ""
+    - "&fPret:"
+    - "&8» $prices$"
 
-price-format: "&7x$amount$ $currency$"
-price-lore:
-  - ""
-  - "&fPret:"
-  - "&8» $prices$"
+  # Pagination settings for the shop
+  skipping-points: [0, 8, 9, 17, 18, 26, 27]
+  items-per-page: 21
+  next-page-icon: "id:stained_glass_pane:5 name:&aPagina_urmatoare"
+  next-button-slots: [8, 17, 26]
+  previous-page-icon: "id:stained_glass_pane:1 name:&aPagina_anterioara"
+  previous-button-slots: [0, 9, 18]
 
-# Pagination settings for the shop
-skipping-points: [0, 8, 9, 17, 18, 26, 27]
-
-items-per-page: 21
-
-next-page-icon: "id:stained_glass_pane:5 name:&aPagina_urmatoare"
-next-button-slots: [8, 17, 26]
-
-previous-page-icon: "id:stained_glass_pane:1 name:&aPagina_anterioara"
-previous-button-slots: [0, 9, 18]
-
-bank:
+bank-options:
   title: "Depoziteaza monedele aici"
   rows: 6
   items:
@@ -47,6 +43,39 @@ bank:
     - "# # # # # # # # #"
     - "# # # # d # # # #"
     - "# # # # # # # # #"
+
+bank-inventory-options:
+  title: "Inventarul bancii tale"
+  rows: 6
+  skipping-points: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 53]
+
+  items-per-page: 42
+
+  next-page-icon: "id:stained_glass_pane:5 name:&aPagina_urmatoare lore:&7Pagina_curenta:_$page$"
+  next-button-slots: [8, 17, 26, 35, 44, 53]
+
+  previous-page-icon: "id:stained_glass_pane:1 name:&aPagina_anterioara lore:&7Pagina_curenta:_$page$"
+  previous-button-slots: [0, 9, 18, 27, 36, 45]
+
+repair-costs:
+  # For all items that have durability
+  durability:
+    durability-given: 100
+    costs:
+      - "1 silver"
+
+  # Only works if you have AtomGadgets
+  # These are the costs for replenishing uses of gadgets
+  gadgets:
+  # The ID of the targeted gadget
+    'grappling-hook':
+      uses-given: 10
+      costs:
+        - "2 silver"
+    'blowpipe':
+      uses-given: 1
+      costs:
+        - "32 bronze"
 
 shops:
   combat:
@@ -255,6 +284,44 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Blowpipe&a!"
           - "ag $player$ 5 20"
+  consumables:
+    title: "Shop » Consumabile"
+    items:
+      'milk':
+        icon: "id:milk_bucket"
+        prices:
+          - "16 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Lapte&a!"
+      'apple':
+        icon: "id:apple"
+        prices:
+          - "15 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar&a!"
+      'bread':
+        icon: "id:bread"
+        prices:
+          - "20 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Paine&a!"
+      'steak':
+        icon: "id:cooked_beef"
+        prices:
+          - "25 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carne&a!"
+      'gcarrot':
+        icon: "id:golden_carrot lore:&8Nivel_de_saturatie_mare"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Morcov de aur&a!"
       'smoke':
         icon: "id:banner pattern:base,silver pattern:skull,black hideFlags unbreaking:1 name:&f&lFumigena lore:&8Arunca_acest_item_pe_jos_si_fugi!|&7Odata_activata,_un_fum_va_acoperi_zona_din|&7jur_(5x5),_orbind_pe_oricine_sta_in_el.|&7|&cDe_unica_folosinta|&7|&8Cooldown_de_10_secunde!"
         prices:
@@ -271,3 +338,59 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Dinamita&a!"
           - "ag $player$ 4 $quantity$"
+      'gapple1':
+        icon: "id:golden_apple"
+        prices:
+          - "2 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar de aur normal&a!"
+      'gapple2':
+        icon: "id:golden_apple:1"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar de aur OP&a!"
+      'pearl':
+        icon: "id:ender_pearl"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Perla&a!"
+      'xpbottle':
+        icon: "id:experience_bottle"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Flacon cu experienta&a!"
+      'regen':
+        icon: "id:potion:8225"
+        prices:
+          - "3 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Regeneration'&a!"
+      'heal':
+        icon: "id:potion:8229"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Instant Health'&a!"
+      'harm':
+        icon: "id:potion:16428"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune Splash 'Instant Damage'&a!"
+      'strength':
+        icon: "id:potion:8233"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Strength'&a!"

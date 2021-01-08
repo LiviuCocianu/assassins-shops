@@ -1,9 +1,11 @@
-package io.github.idoomful.assassinseconomy.gui;
+package io.github.idoomful.assassinseconomy.gui.inventories;
 
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
+import io.github.idoomful.assassinseconomy.gui.MyGUI;
+import io.github.idoomful.assassinseconomy.gui.Paginable;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -22,7 +24,7 @@ public class ShopGUI extends Paginable implements MyGUI, InventoryHolder {
     private final Player player;
 
     public ShopGUI(String category, Player player) {
-        inventory = Bukkit.createInventory(this, SettingsYML.SHOP_ROWS.getInt() * 9, SettingsYML.Shops.OPTIONS.getCategoryTitle(category));
+        inventory = Bukkit.createInventory(this, SettingsYML.ShopOptions.ROWS.getInt() * 9, SettingsYML.Shops.OPTIONS.getCategoryTitle(category));
         this.category = category;
         this.player = player;
         openInventory(player);
@@ -43,10 +45,10 @@ public class ShopGUI extends Paginable implements MyGUI, InventoryHolder {
                 lore.addAll(im.getLore());
             }
 
-            for(String line : SettingsYML.PRICE_LORE.getStringList(player)) {
+            for(String line : SettingsYML.ShopOptions.PRICE_LORE.getStringList(player)) {
                 if(line.contains("$prices$")) {
                     for(ConfigPair<Integer, String> price : DMain.getInstance().getShopCategories().get(category).get(i).getPrices()) {
-                        lore.add(Utils.color(line.replace("$prices$", SettingsYML.PRICE_FORMAT.getString(player)
+                        lore.add(Utils.color(line.replace("$prices$", SettingsYML.ShopOptions.PRICE_FORMAT.getString(player)
                                 .replace("$amount$", price.getKey() + ""))
                                 .replace("$currency$", MessagesYML.Currencies.OPTIONS.getString(price.getValue())))
                         );
@@ -82,22 +84,22 @@ public class ShopGUI extends Paginable implements MyGUI, InventoryHolder {
 
     @Override
     protected int[] skippingPoints() {
-        return SettingsYML.SKIPPING_POINTS.getIntArray();
+        return SettingsYML.ShopOptions.SKIPPING_POINTS.getIntArray();
     }
 
     @Override
     protected int itemsPerPage() {
-        return SettingsYML.ITEMS_PER_PAGE.getInt();
+        return SettingsYML.ShopOptions.ITEMS_PER_PAGE.getInt();
     }
 
     @Override
     protected ItemStack createNextButton() {
-        return SettingsYML.NEXT_PAGE_ICON.getItem();
+        return SettingsYML.ShopOptions.NEXT_PAGE_ICON.getItem();
     }
 
     @Override
     protected ItemStack createPreviousButton() {
-        return SettingsYML.PREVIOUS_PAGE_ICON.getItem();
+        return SettingsYML.ShopOptions.PREVIOUS_PAGE_ICON.getItem();
     }
 
     @Override
@@ -107,12 +109,12 @@ public class ShopGUI extends Paginable implements MyGUI, InventoryHolder {
 
     @Override
     protected int[] nextButtonSlots() {
-        return SettingsYML.NEXT_BUTTON_SLOTS.getIntArray();
+        return SettingsYML.ShopOptions.NEXT_BUTTON_SLOTS.getIntArray();
     }
 
     @Override
     protected int[] previousButtonSlots() {
-        return SettingsYML.PREVIOUS_BUTTON_SLOTS.getIntArray();
+        return SettingsYML.ShopOptions.PREVIOUS_BUTTON_SLOTS.getIntArray();
     }
 
     @Override

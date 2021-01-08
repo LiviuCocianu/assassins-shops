@@ -89,7 +89,9 @@ public enum MessagesYML {
         UNSTACKABLE_ITEM("unstackable-item"),
         NO_CONVERTIBLES("no-convertibles"),
         NOT_ENOUGH_SPACE("not-enough-space"),
-        NO_BANK("no-bank");
+        NO_BANK("no-bank"),
+        NO_HAND_ITEM("no-hand-item"),
+        MAX_DURABILITY("max-durability");
 
         String output;
         FileConfiguration messages;

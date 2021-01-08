@@ -6,25 +6,31 @@ import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
-import io.github.idoomful.assassinseconomy.gui.BankGUI;
 import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
-import io.github.idoomful.assassinseconomy.gui.ShopGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.BankGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.BankInventoryGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.ShopGUI;
 import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
 import io.github.idoomful.assassinseconomy.utils.Events;
 import io.github.idoomful.assassinseconomy.utils.Utils;
+import javafx.scene.layout.Priority;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+
+import static org.bukkit.event.EventPriority.MONITOR;
 
 public class EventsClass implements Listener {
     private final DMain main;
@@ -39,6 +45,15 @@ public class EventsClass implements Listener {
 
         Events.listen(main, InventoryCloseEvent.class, e -> {
             main.getOpenedShops().remove(e.getPlayer().getUniqueId());
+            main.getOpenedBanks().remove(e.getPlayer().getUniqueId());
+
+            if(e.getInventory().getHolder() instanceof BankGUI) {
+                for(int i = 0; i < 27; i++) {
+                    ItemStack item = e.getInventory().getItem(i);
+                    if(item == null) continue;
+                    e.getPlayer().getInventory().addItem(item);
+                }
+            }
         });
 
         Events.listen(main, PlayerQuitEvent.class, e -> {
@@ -84,20 +99,20 @@ public class EventsClass implements Listener {
     public void onGUIClick(InventoryClickEvent e) {
         if(e.getClickedInventory() == null) return;
         if(e.getCurrentItem() == null) return;
-        if(e.getCurrentItem().getType() == Material.AIR) return;
 
         Player player = (Player) e.getWhoClicked();
         ItemStack clicked = e.getCurrentItem();
 
         if(e.getClickedInventory().getHolder() instanceof ShopGUI) {
+            if(e.getCurrentItem().getType() == Material.AIR) return;
             e.setCancelled(true);
 
-            if(clicked.isSimilar(SettingsYML.NEXT_PAGE_ICON.getItem())) {
+            if(clicked.isSimilar(SettingsYML.ShopOptions.NEXT_PAGE_ICON.getItem())) {
                 main.getOpenedShops().get(player.getUniqueId()).nextPage();
                 return;
             }
 
-            if(clicked.isSimilar(SettingsYML.PREVIOUS_PAGE_ICON.getItem())) {
+            if(clicked.isSimilar(SettingsYML.ShopOptions.PREVIOUS_PAGE_ICON.getItem())) {
                 main.getOpenedShops().get(player.getUniqueId()).previousPage();
                 return;
             }
@@ -116,10 +131,10 @@ public class EventsClass implements Listener {
 
                     List<String> lore = new ArrayList<>();
 
-                    for(String line : SettingsYML.PRICE_LORE.getStringList(player)) {
+                    for(String line : SettingsYML.ShopOptions.PRICE_LORE.getStringList(player)) {
                         if(line.contains("$prices$")) {
                             for(ConfigPair<Integer, String> price : shopItem.getPrices()) {
-                                lore.add(Utils.color(line.replace("$prices$", SettingsYML.PRICE_FORMAT.getString(player)
+                                lore.add(Utils.color(line.replace("$prices$", SettingsYML.ShopOptions.PRICE_FORMAT.getString(player)
                                         .replace("$amount$", price.getKey() + ""))
                                         .replace("$currency$", MessagesYML.Currencies.OPTIONS.getString(price.getValue())))
                                 );
@@ -148,11 +163,12 @@ public class EventsClass implements Listener {
         } else if(e.getView().getTopInventory().getHolder() instanceof BankGUI
                 && (e.getView().getBottomInventory().equals(e.getClickedInventory())
                 || e.getView().getTopInventory().equals(e.getClickedInventory()))) {
+            if(e.getCurrentItem().getType() == Material.AIR) return;
 
             HashMap<String, Integer> toDeposit = new HashMap<>();
 
             // Check if they clicked on the deposit icon
-            if(clicked.isSimilar(SettingsYML.Bank.ITEMS.getItem("d"))) {
+            if(clicked.isSimilar(SettingsYML.BankOptions.ITEMS.getItem("d"))) {
                 for(ItemStack item : e.getClickedInventory().getContents()) {
                     if(item == null) continue;
 
@@ -181,12 +197,45 @@ public class EventsClass implements Listener {
                     if(index != toDeposit.size()) currencies.append(MessagesYML.CURRENCY_SEPARATOR.color(player));
                 }
 
+                for(int i = 0; i < 27; i++) e.getClickedInventory().setItem(i, null);
+
                 player.closeInventory();
                 player.sendMessage(MessagesYML.CURRENCY_SAVED.withPrefix(player)
                         .replace("$currencies$", Utils.color(currencies.toString())));
             } else if(!NBTEditor.contains(clicked, "CurrencyId")) {
                 e.setCancelled(true);
             }
+        } else if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI) {
+            BankInventoryGUI gui = main.getOpenedBanks().get(player.getUniqueId());
+
+            if(clicked.isSimilar(ItemBuilder.build(SettingsYML.BankInventoryOptions.NEXT_PAGE_ICON.getString(player)
+                    .replace("$page$", gui.getPage() + "")))) {
+                e.setCancelled(true);
+                gui.nextPage();
+                return;
+            }
+
+            if(clicked.isSimilar(ItemBuilder.build(SettingsYML.BankInventoryOptions.PREVIOUS_PAGE_ICON.getString(player)
+                    .replace("$page$", gui.getPage() + "")))) {
+                e.setCancelled(true);
+                gui.previousPage();
+                return;
+            }
+
+            if(e.getClick() == ClickType.MIDDLE) return;
+
+            if(e.getCursor().getType() != Material.AIR) {
+                e.setCancelled(true);
+                return;
+            }
+
+            if(clicked.getType() != Material.AIR && NBTEditor.contains(clicked, "CurrencyId")) {
+                String currency = NBTEditor.getString(clicked, "CurrencyId");
+                main.getSQL().subtractCurrency(player.getName(), currency, clicked.getAmount());
+            }
+        } else if(e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI
+                && e.getView().getBottomInventory().equals(e.getClickedInventory())) {
+            if(e.isShiftClick()) e.setCancelled(true);
         }
     }
 
@@ -263,6 +312,39 @@ public class EventsClass implements Listener {
                 targetedItem.remove(player.getUniqueId());
             } catch(NumberFormatException ne) {
                 player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(player));
+            }
+        }
+    }
+
+    @EventHandler(priority = MONITOR)
+    public void onCommand(PlayerCommandPreprocessEvent e) {
+        String command = e.getMessage();
+        Player player = e.getPlayer();
+
+        // Override Essentials command
+        if(command.equalsIgnoreCase("/repair")) {
+            e.setCancelled(true);
+
+            ItemStack inHand = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                    ? player.getInventory().getItemInHand()
+                    : player.getInventory().getItemInMainHand();
+
+            if(inHand == null || inHand.getType() == Material.AIR || inHand.getType().getMaxDurability() == 0) {
+                player.sendMessage(MessagesYML.Errors.NO_HAND_ITEM.withPrefix(player));
+                return;
+            }
+
+            if(inHand.getDurability() == inHand.getType().getMaxDurability()) {
+                player.sendMessage(MessagesYML.Errors.MAX_DURABILITY.withPrefix(player));
+                return;
+            }
+
+            if(NBTEditor.contains(inHand, "GadgetName")) {
+                String name = NBTEditor.getString(inHand, "GadgetName");
+
+                if(SettingsYML.RepairCosts.OPTIONS.isGadgetReplenishable(name)) {
+
+                }
             }
         }
     }

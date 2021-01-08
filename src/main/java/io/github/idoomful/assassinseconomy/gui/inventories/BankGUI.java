@@ -1,6 +1,8 @@
-package io.github.idoomful.assassinseconomy.gui;
+package io.github.idoomful.assassinseconomy.gui.inventories;
 
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
+import io.github.idoomful.assassinseconomy.gui.InventoryBuilder;
+import io.github.idoomful.assassinseconomy.gui.MyGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -12,11 +14,11 @@ public class BankGUI implements MyGUI, InventoryHolder {
 
     public BankGUI(Player player) {
         this.player = player;
-        inventory = Bukkit.createInventory(this, SettingsYML.Bank.ROWS.getInt() * 9, SettingsYML.Bank.TITLE.getString(player));
+        inventory = Bukkit.createInventory(this, SettingsYML.BankOptions.ROWS.getInt() * 9, SettingsYML.BankOptions.TITLE.getString(player));
 
         InventoryBuilder builder = new InventoryBuilder(inventory);
-        builder.setConfigItemList(SettingsYML.Bank.ITEMS.getItemList(), player);
-        builder.setConfigItemArrangement(SettingsYML.Bank.LAYOUT.getStringList(player));
+        builder.setConfigItemList(SettingsYML.BankOptions.ITEMS.getItemList(), player);
+        builder.setConfigItemArrangement(SettingsYML.BankOptions.LAYOUT.getStringList(player));
 
         openInventory(player);
     }

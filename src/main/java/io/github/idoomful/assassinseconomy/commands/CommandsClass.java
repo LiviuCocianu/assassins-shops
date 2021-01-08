@@ -1,15 +1,18 @@
 package io.github.idoomful.assassinseconomy.commands;
 
-import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
-import io.github.idoomful.assassinseconomy.gui.BankGUI;
-import io.github.idoomful.assassinseconomy.gui.ShopGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.BankGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.BankInventoryGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.ShopGUI;
 import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -131,7 +134,7 @@ public class CommandsClass {
             }
 
             if(args.length == 0) {
-
+                MessagesYML.Lists.HELP.getStringList(arg).forEach(player::sendMessage);
                 return;
             }
 
@@ -169,24 +172,29 @@ public class CommandsClass {
                     }
                     break;
                 case "convert":
-                    if(player instanceof Player) {
-                        if (player.hasPermission(pluginNameLower + ".command.convert")) {
-                            if(args.length == 2) {
-                                if(args[1].equalsIgnoreCase("up")) {
-                                    CurrencyUtils.convert((Player) player, CurrencyUtils.ConvertWay.UP);
-                                } else if(args[1].equalsIgnoreCase("down")) {
-                                    CurrencyUtils.convert((Player) player, CurrencyUtils.ConvertWay.DOWN);
-                                }
-                            } else {
-                                player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
+                    if (player.hasPermission(pluginNameLower + ".command.convert")) {
+                        if (args.length == 3) {
+                            if(!Bukkit.getPlayer(args[1]).isOnline()) {
+                                player.sendMessage(MessagesYML.Errors.NOT_ONLINE.withPrefix(arg));
+                                return;
+                            }
+
+                            Player target = Bukkit.getPlayer(args[1]);
+
+                            if (args[2].equalsIgnoreCase("up")) {
+                                CurrencyUtils.convert(target, CurrencyUtils.ConvertWay.UP);
+                            } else if (args[2].equalsIgnoreCase("down")) {
+                                CurrencyUtils.convert(target, CurrencyUtils.ConvertWay.DOWN);
                             }
                         } else {
-                            player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                            player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
                         }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                     }
                     break;
-                case "bank":
-                    if (player.hasPermission(pluginNameLower + ".command.bank")) {
+                case "deposit":
+                    if (player.hasPermission(pluginNameLower + ".command.deposit")) {
                         if(args.length == 2) {
                             plugin.getSQL().exists(args[1], result -> {
                                 Player target = Bukkit.getPlayer(args[1]);
@@ -220,6 +228,47 @@ public class CommandsClass {
                                 }
 
                                 new BankGUI(pl);
+                            });
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
+                    break;
+                case "inventory":
+                    if (player.hasPermission(pluginNameLower + ".command.inventory")) {
+                        if(args.length == 2) {
+                            plugin.getSQL().exists(args[1], result -> {
+                                Player target = Bukkit.getPlayer(args[1]);
+
+                                if(result) plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
+                                else {
+                                    if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
+                                        player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
+
+                                        HashMap<String, Integer> map = new HashMap<>();
+                                        SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                        plugin.getSQL().addEntry(player.getName(), map);
+
+                                        plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
+                                        return;
+                                    }
+
+                                    player.sendMessage(MessagesYML.Errors.NO_BANK.withPrefix(null));
+                                }
+                            });
+                        } else if(args.length == 1 && player instanceof Player) {
+                            Player pl = (Player) player;
+
+                            plugin.getSQL().exists(pl.getName(), result -> {
+                                if(!result) {
+                                    player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
+
+                                    HashMap<String, Integer> map = new HashMap<>();
+                                    SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                    plugin.getSQL().addEntry(pl.getName(), map);
+                                }
+
+                                plugin.getOpenedBanks().put(pl.getUniqueId(), new BankInventoryGUI(pl));
                             });
                         }
                     } else {

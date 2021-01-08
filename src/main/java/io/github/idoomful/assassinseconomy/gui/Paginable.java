@@ -1,6 +1,5 @@
 package io.github.idoomful.assassinseconomy.gui;
 
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -20,8 +19,11 @@ public abstract class Paginable {
 	protected abstract int[] previousButtonSlots();
 	protected abstract Inventory getInventory();
 
-	private int getPage() {
+	public int getPage() {
 		return page;
+	}
+	public void setPage(int page) {
+		this.page = page;
 	}
 
 	public void nextPage() { isNextPage(true); }

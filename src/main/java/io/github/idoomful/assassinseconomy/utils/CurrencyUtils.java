@@ -123,30 +123,34 @@ public class CurrencyUtils {
         String currency = getFirstCurrencyType(player, way);
 
         HashMap<String, ConfigPair<Integer, String>> map = SettingsYML.CurrencyWorths.OPTIONS.getWorthMap();
-        int space = 0;
+        int space;
 
-        if(way == ConvertWay.DOWN) {
-            if(map.get(currency) == null) {
-                int index = 1;
-                String clone = SettingsYML.Currencies.OPTIONS.getIDs().get(SettingsYML.Currencies.OPTIONS.getIDs().indexOf(currency) + index);
+        while(
+                (map.get(currency) == null && way == ConvertWay.DOWN)
+                || (!hasEnoughToConvert(player, currency) && way == ConvertWay.UP)
+        ) {
+            int index = 1;
+            List<String> ids = SettingsYML.Currencies.OPTIONS.getIDs();
+            if((ids.indexOf(currency) + index) >= ids.size()) break;
 
-                while(clone == null) {
-                    index += 1;
-                    clone = SettingsYML.Currencies.OPTIONS.getIDs().get(SettingsYML.Currencies.OPTIONS.getIDs().indexOf(currency) + index);
-                }
+            String clone = ids.get(ids.indexOf(currency) + index);
 
-                currency = clone;
+            while (clone == null) {
+                index += 1;
+                clone = ids.get(ids.indexOf(currency) + index);
             }
 
-            space = getItemSpace(player, SettingsYML.Currencies.OPTIONS.getMarkedItem(map.get(currency).getValue(), 1));
+            currency = clone;
         }
+
+        space = getItemSpace(player, SettingsYML.Currencies.OPTIONS.getMarkedItem(map.get(currency).getValue(), 1));
 
         int index = 0;
         int amountAcumulated = 0;
         List<Integer> currencyStacks = new ArrayList<>();
         String inferiorDown = null;
 
-        for (ItemStack item : player.getInventory().getContents()) {
+        for(ItemStack item : player.getInventory().getContents()) {
             if (item == null) {
                 index++;
                 continue;
@@ -241,5 +245,25 @@ public class CurrencyUtils {
         }
 
         return output;
+    }
+
+    public static boolean hasEnoughToConvert(Player player, String currency) {
+        int total = 0;
+
+        for(ItemStack item : player.getInventory().getContents()) {
+            if (item == null) continue;
+            if(NBTEditor.contains(item, "CurrencyId")) {
+                if(NBTEditor.getString(item, "CurrencyId").equals(currency))
+                    total += item.getAmount();
+            }
+        }
+
+        int currIndex = SettingsYML.CurrencyWorths.OPTIONS.getIDs().indexOf(currency) + 1;
+
+        if(currIndex >= SettingsYML.CurrencyWorths.OPTIONS.getIDs().size()) return false;
+
+        String above = SettingsYML.CurrencyWorths.OPTIONS.getIDs().get(currIndex);
+
+        return total >= Objects.requireNonNull(SettingsYML.CurrencyWorths.OPTIONS.getWorth(above)).getKey();
     }
 }

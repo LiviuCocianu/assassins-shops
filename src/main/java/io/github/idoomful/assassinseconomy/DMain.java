@@ -7,7 +7,8 @@ import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.configuration.ShopItem;
 import io.github.idoomful.assassinseconomy.data.SQL.Lite;
 import io.github.idoomful.assassinseconomy.events.EventsClass;
-import io.github.idoomful.assassinseconomy.gui.ShopGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.BankInventoryGUI;
+import io.github.idoomful.assassinseconomy.gui.inventories.ShopGUI;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class DMain extends JavaPlugin {
 
     private final HashMap<String, List<ShopItem>> shopCategories = new HashMap<>();
     private final HashMap<UUID, ShopGUI> shops = new HashMap<>();
+    private final HashMap<UUID, BankInventoryGUI> banks = new HashMap<>();
     private Lite sql;
 
     private Gson gson = new Gson();
@@ -65,6 +67,9 @@ public class DMain extends JavaPlugin {
     }
     public HashMap<UUID, ShopGUI> getOpenedShops() {
         return shops;
+    }
+    public HashMap<UUID, BankInventoryGUI> getOpenedBanks() {
+        return banks;
     }
     public Lite getSQL() {
         return sql;
