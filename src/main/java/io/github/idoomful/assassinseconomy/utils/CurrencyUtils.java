@@ -37,7 +37,7 @@ public class CurrencyUtils {
         }
 
         // Handle change
-        List<String> ids = SettingsYML.Currencies.OPTIONS.getIDs();
+        List<String> ids = Economy.Currency.getIDs();
 
         // Resume loop from the next currency to check if the player has any superior currency
         for(int j = ids.indexOf(currency) + 1; j < ids.size(); j++) {
@@ -57,7 +57,7 @@ public class CurrencyUtils {
                         player.getInventory().setItem(i, item);
 
                         // Get worth of that currency
-                        ConfigPair<Integer, String> worth = SettingsYML.CurrencyWorths.OPTIONS.getWorth(resumedCurrency);
+                        ConfigPair<Integer, String> worth = Economy.Worth.getWorth(resumedCurrency);
 
                         // Index of the currency that will end up being used for thw withdrawal
                         // Starting from the biggest currency
@@ -65,25 +65,25 @@ public class CurrencyUtils {
 
                         // The currency that needs to be reached
                         String currIndexed = ids.get(currIndex);
-                        int currWorthIndexed = SettingsYML.CurrencyWorths.OPTIONS.getWorth(ids.get(currIndex + 1)).getKey();
+                        int currWorthIndexed = Economy.Worth.getWorth(ids.get(currIndex + 1)).getKey();
 
                         int previousIndex = 0;
 
                         // Keep track of the change that needs to be given in the process
                         List<ItemStack> changeList = new ArrayList<>();
-                        changeList.add(SettingsYML.Currencies.OPTIONS.getMarkedItem(currIndexed, currWorthIndexed));
+                        changeList.add(Economy.Currency.getMarkedItem(currIndexed, currWorthIndexed));
 
                         while (!currIndexed.equals(currency)) {
                             // Go down to the inferior of this currIndexed
                             currIndex -= 1;
                             currIndexed = ids.get(currIndex);
-                            currWorthIndexed = SettingsYML.CurrencyWorths.OPTIONS.getWorth(ids.get(currIndex + 1)).getKey();
+                            currWorthIndexed = Economy.Worth.getWorth(ids.get(currIndex + 1)).getKey();
 
                             // Subtract one unit so change can be broken down
                             changeList.get(previousIndex).setAmount(changeList.get(previousIndex).getAmount() - 1);
 
                             // Add a stack of inferior currency
-                            changeList.add(SettingsYML.Currencies.OPTIONS.getMarkedItem(currIndexed, currWorthIndexed));
+                            changeList.add(Economy.Currency.getMarkedItem(currIndexed, currWorthIndexed));
 
                             previousIndex += 1;
                         }
@@ -122,7 +122,7 @@ public class CurrencyUtils {
 
         String currency = getFirstCurrencyType(player, way);
 
-        HashMap<String, ConfigPair<Integer, String>> map = SettingsYML.CurrencyWorths.OPTIONS.getWorthMap();
+        HashMap<String, ConfigPair<Integer, String>> map = Economy.Worth.getWorthMap();
         int space;
 
         while(
@@ -130,7 +130,7 @@ public class CurrencyUtils {
                 || (!hasEnoughToConvert(player, currency) && way == ConvertWay.UP)
         ) {
             int index = 1;
-            List<String> ids = SettingsYML.Currencies.OPTIONS.getIDs();
+            List<String> ids = Economy.Currency.getIDs();
             if((ids.indexOf(currency) + index) >= ids.size()) break;
 
             String clone = ids.get(ids.indexOf(currency) + index);
@@ -143,7 +143,7 @@ public class CurrencyUtils {
             currency = clone;
         }
 
-        space = getItemSpace(player, SettingsYML.Currencies.OPTIONS.getMarkedItem(map.get(currency).getValue(), 1));
+        space = getItemSpace(player, Economy.Currency.getMarkedItem(map.get(currency).getValue(), 1));
 
         int index = 0;
         int amountAcumulated = 0;
@@ -168,7 +168,7 @@ public class CurrencyUtils {
                                 while (item.getAmount() >= amountToSearch) {
                                     item.setAmount(item.getAmount() - amountToSearch);
                                     player.getInventory().setItem(index, item);
-                                    player.getInventory().addItem(SettingsYML.Currencies.OPTIONS.getMarkedItem(entry.getKey(), 1));
+                                    player.getInventory().addItem(Economy.Currency.getMarkedItem(entry.getKey(), 1));
                                     reached.set(true);
                                 }
                             }
@@ -202,7 +202,7 @@ public class CurrencyUtils {
                 player.getInventory().setItem(itemIndex, item);
             }
 
-            player.getInventory().addItem(SettingsYML.Currencies.OPTIONS.getMarkedItem(inferiorDown, amountAcumulated));
+            player.getInventory().addItem(Economy.Currency.getMarkedItem(inferiorDown, amountAcumulated));
             reached.set(true);
         }
 
@@ -213,6 +213,49 @@ public class CurrencyUtils {
         } else {
             player.sendMessage(MessagesYML.Errors.NO_CONVERTIBLES.withPrefix(player));
         }
+    }
+
+    public static boolean withdrawCosts(Player player, List<ConfigPair<Integer, String>> costs) {
+        List<ConfigPair<Integer, String>> withdrawnBackup = new ArrayList<>();
+
+        for(ConfigPair<Integer, String> pair : costs) {
+            boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey(), player);
+
+            if(result) {
+                withdrawnBackup.add(pair);
+            } else {
+                withdrawnBackup.forEach(backup -> {
+                    player.getInventory().addItem(Economy.Currency.getMarkedItem(backup.getValue(), backup.getKey()));
+                });
+
+                player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean hasAllCurrencies(Player player, List<ConfigPair<Integer, String>> currencies) {
+        HashMap<String, Integer> playerCurr = new HashMap<>();
+
+        for(ItemStack item : player.getInventory().getContents()) {
+            if (item == null) continue;
+
+            if(NBTEditor.contains(item, "CurrencyId")) {
+                String curr = NBTEditor.getString(item, "CurrencyId");
+
+                if(!playerCurr.containsKey(curr)) playerCurr.put(curr, 0);
+                playerCurr.put(curr, playerCurr.get(curr) + item.getAmount());
+            }
+        }
+
+        for(ConfigPair<Integer, String> pair : currencies) {
+            if(!playerCurr.containsKey(pair.getValue())) return false;
+            if(playerCurr.get(pair.getValue()) < pair.getKey()) return false;
+        }
+
+        return true;
     }
 
     private static int getItemSpace(Player player, ItemStack item) {
@@ -231,7 +274,7 @@ public class CurrencyUtils {
     private static String getFirstCurrencyType(Player player, ConvertWay direction) {
         String output = "";
 
-        List<String> currencyList =  SettingsYML.Currencies.OPTIONS.getIDs();
+        List<String> currencyList =  Economy.Currency.getIDs();
         if(direction == ConvertWay.DOWN) Collections.reverse(currencyList);
 
         for(String curr : currencyList) {
@@ -247,7 +290,7 @@ public class CurrencyUtils {
         return output;
     }
 
-    public static boolean hasEnoughToConvert(Player player, String currency) {
+    private static boolean hasEnoughToConvert(Player player, String currency) {
         int total = 0;
 
         for(ItemStack item : player.getInventory().getContents()) {
@@ -258,12 +301,12 @@ public class CurrencyUtils {
             }
         }
 
-        int currIndex = SettingsYML.CurrencyWorths.OPTIONS.getIDs().indexOf(currency) + 1;
+        int currIndex = Economy.Worth.getIDs().indexOf(currency) + 1;
 
-        if(currIndex >= SettingsYML.CurrencyWorths.OPTIONS.getIDs().size()) return false;
+        if(currIndex >= Economy.Worth.getIDs().size()) return false;
 
-        String above = SettingsYML.CurrencyWorths.OPTIONS.getIDs().get(currIndex);
+        String above = Economy.Worth.getIDs().get(currIndex);
 
-        return total >= Objects.requireNonNull(SettingsYML.CurrencyWorths.OPTIONS.getWorth(above)).getKey();
+        return total >= Objects.requireNonNull(Economy.Worth.getWorth(above)).getKey();
     }
 }

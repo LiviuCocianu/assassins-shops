@@ -34,6 +34,8 @@ errors:
   no-bank: "&cAcest jucator nu are o banca"
   no-hand-item: "&cTrebuie sa tii un item valid in mana"
   max-durability: "&cAcest item este deja reparat complet"
+  max-uses: "&cAcest item are numarul de utilizari la maxim"
+  not-broken-enough: "&cAcestui item trebuie sa-i lipseasca cel putin $durability$ durabilitate pentru a putea fi reparat"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsShop  &7&m---------*-"

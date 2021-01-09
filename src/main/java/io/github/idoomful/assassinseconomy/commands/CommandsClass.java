@@ -8,6 +8,7 @@ import io.github.idoomful.assassinseconomy.gui.inventories.BankGUI;
 import io.github.idoomful.assassinseconomy.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinseconomy.gui.inventories.ShopGUI;
 import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
+import io.github.idoomful.assassinseconomy.utils.Economy;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -45,7 +46,7 @@ public class CommandsClass {
             switch(args[0]) {
                 case "currencies":
                     if(player.hasPermission(pluginNameLower + ".command.currencies")) {
-                        List<String> results = SettingsYML.Currencies.OPTIONS.getIDs();
+                        List<String> results = Economy.Currency.getIDs();
                         String str = results.toString().replaceAll("[\\[\\]]", "");
                         player.sendMessage(MessagesYML.CURRENCIES.withPrefix(arg).replace("$currencies$", str));
                     } else {
@@ -152,11 +153,11 @@ public class CommandsClass {
 
                             Player target = Bukkit.getPlayer(args[1]);
 
-                            if (SettingsYML.Currencies.OPTIONS.hasID(args[2])) {
+                            if (Economy.Currency.hasID(args[2])) {
                                 try {
                                     int amount = args.length == 4 ? Integer.parseInt(args[3]) : 1;
                                     target.getInventory().addItem(
-                                            SettingsYML.Currencies.OPTIONS.getMarkedItem(args[2], amount)
+                                            Economy.Currency.getMarkedItem(args[2], amount)
                                     );
                                 } catch (NumberFormatException ne) {
                                     player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(arg));
@@ -205,7 +206,7 @@ public class CommandsClass {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
 
                                         HashMap<String, Integer> map = new HashMap<>();
-                                        SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                        Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                         plugin.getSQL().addEntry(player.getName(), map);
 
                                         new BankGUI(target);
@@ -223,7 +224,7 @@ public class CommandsClass {
                                     player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
 
                                     HashMap<String, Integer> map = new HashMap<>();
-                                    SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                    Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                     plugin.getSQL().addEntry(pl.getName(), map);
                                 }
 
@@ -246,7 +247,7 @@ public class CommandsClass {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
 
                                         HashMap<String, Integer> map = new HashMap<>();
-                                        SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                        Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                         plugin.getSQL().addEntry(player.getName(), map);
 
                                         plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
@@ -264,7 +265,7 @@ public class CommandsClass {
                                     player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
 
                                     HashMap<String, Integer> map = new HashMap<>();
-                                    SettingsYML.Currencies.OPTIONS.getIDs().forEach(curr -> map.put(curr, 0));
+                                    Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                     plugin.getSQL().addEntry(pl.getName(), map);
                                 }
 

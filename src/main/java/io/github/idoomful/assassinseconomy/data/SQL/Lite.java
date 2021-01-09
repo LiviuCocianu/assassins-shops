@@ -2,6 +2,7 @@ package io.github.idoomful.assassinseconomy.data.SQL;
 
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
+import io.github.idoomful.assassinseconomy.utils.Economy;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -94,13 +95,13 @@ public class Lite {
             while(rs.next()) {
                 MapWrapper map = plugin.getGson().fromJson(rs.getString(1), MapWrapper.class);
 
-                if(SettingsYML.Currencies.OPTIONS.getIDs().size() > map.getMap().size()) {
-                    SettingsYML.Currencies.OPTIONS.getIDs().forEach(id -> {
+                if(Economy.Currency.getIDs().size() > map.getMap().size()) {
+                    Economy.Currency.getIDs().forEach(id -> {
                         if(!map.getMap().containsKey(id)) map.getMap().put(id, 0);
                     });
-                } else if(SettingsYML.Currencies.OPTIONS.getIDs().size() < map.getMap().size()) {
+                } else if(Economy.Currency.getIDs().size() < map.getMap().size()) {
                     new HashMap<>(map.getMap()).keySet().forEach(id -> {
-                        if(!SettingsYML.Currencies.OPTIONS.getIDs().contains(id)) map.getMap().remove(id);
+                        if(!Economy.Currency.getIDs().contains(id)) map.getMap().remove(id);
                     });
                 }
 

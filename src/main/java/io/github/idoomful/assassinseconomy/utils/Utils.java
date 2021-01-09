@@ -1,13 +1,17 @@
 package io.github.idoomful.assassinseconomy.utils;
 
+import io.github.idoomful.assassinseconomy.DMain;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.*;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -43,6 +47,12 @@ public class Utils {
 
     public static int getEmptySlotCount(Player player) {
         return (int) Arrays.stream(player.getInventory().getContents()).filter(Objects::isNull).count();
+    }
+
+    public static FileConfiguration getConfigOf(String plugin, String configName) {
+        File file = new File(DMain.getInstance().getDataFolder().getPath()
+                .replace(DMain.getInstance().getDescription().getName(), plugin + "/" + configName + ".yml"));
+        return YamlConfiguration.loadConfiguration(file);
     }
 
     public static void sendActionText(Player player, String message){

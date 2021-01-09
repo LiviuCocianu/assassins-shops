@@ -92,7 +92,9 @@ public enum MessagesYML {
         NOT_ENOUGH_SPACE("not-enough-space"),
         NO_BANK("no-bank"),
         NO_HAND_ITEM("no-hand-item"),
-        MAX_DURABILITY("max-durability");
+        MAX_USES("max-uses"),
+        MAX_DURABILITY("max-durability"),
+        NOT_BROKEN_ENOUGH("not-broken-enough");
 
         String output;
         FileConfiguration messages;

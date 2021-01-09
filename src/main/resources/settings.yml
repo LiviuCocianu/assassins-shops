@@ -71,11 +71,11 @@ repair-costs:
     'grappling-hook':
       uses-given: 10
       costs:
-        - "2 silver"
+        - "1 silver"
     'blowpipe':
-      uses-given: 1
+      uses-given: 3
       costs:
-        - "32 bronze"
+        - "1 silver"
 
 shops:
   combat:
@@ -142,6 +142,13 @@ shops:
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de diamant&a!"
+      'icepick':
+        icon: "id:iron_hoe unbreakable hideFlags name:&f&lPiolet lore:&8Instrument_folosit_pentru_escaladari|&7Stai_aproape_de_un_perete_si_apasa|&7click_dreapta_repetat_pentru_a_escalada."
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Piolet&a!"
       'bow':
         icon: "id:bow"
         prices:

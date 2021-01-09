@@ -11,6 +11,7 @@ import io.github.idoomful.assassinseconomy.gui.inventories.BankGUI;
 import io.github.idoomful.assassinseconomy.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinseconomy.gui.inventories.ShopGUI;
 import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
+import io.github.idoomful.assassinseconomy.utils.Economy;
 import io.github.idoomful.assassinseconomy.utils.Events;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import javafx.scene.layout.Priority;
@@ -74,8 +75,8 @@ public class EventsClass implements Listener {
         if(e.getCursor() != null) {
             ItemStack item = e.getCursor();
 
-            for(String id : SettingsYML.Currencies.OPTIONS.getIDs()) {
-                if(item.isSimilar(SettingsYML.Currencies.OPTIONS.getItem(id, item.getAmount()))) {
+            for(String id : Economy.Currency.getIDs()) {
+                if(item.isSimilar(Economy.Currency.getItem(id, item.getAmount()))) {
                     if(!NBTEditor.contains(item, "CurrencyId")) {
                         e.setCursor(NBTEditor.set(item, id, "CurrencyId"));
                         return;
@@ -89,8 +90,8 @@ public class EventsClass implements Listener {
 
             ItemStack item = items[i];
 
-            for(String id : SettingsYML.Currencies.OPTIONS.getIDs()) {
-                if(item.isSimilar(SettingsYML.Currencies.OPTIONS.getItem(id, item.getAmount()))) {
+            for(String id : Economy.Currency.getIDs()) {
+                if(item.isSimilar(Economy.Currency.getItem(id, item.getAmount()))) {
                     if(!NBTEditor.contains(item, "CurrencyId"))
                     e.getInventory().setItem(i, NBTEditor.set(item, id, "CurrencyId"));
                 }
@@ -272,15 +273,7 @@ public class EventsClass implements Listener {
                     return;
                 }
 
-                boolean oneIsFaulty = false;
-
-                for(ConfigPair<Integer, String> pair : shopItem.getPrices()) {
-                    boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey() * amount, player);
-                    if(!result) oneIsFaulty = true;
-                }
-
-                if(oneIsFaulty) {
-                    player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                if(!CurrencyUtils.withdrawCosts(player, shopItem.getPrices())) {
                     chatEvent.remove(player.getUniqueId());
                     targetedItem.remove(player.getUniqueId());
                     return;
@@ -332,13 +325,8 @@ public class EventsClass implements Listener {
                     ? player.getInventory().getItemInHand()
                     : player.getInventory().getItemInMainHand();
 
-            if(inHand == null || inHand.getType() == Material.AIR || inHand.getType().getMaxDurability() == 0) {
+            if(inHand == null || inHand.getType() == Material.AIR) {
                 player.sendMessage(MessagesYML.Errors.NO_HAND_ITEM.withPrefix(player));
-                return;
-            }
-
-            if(inHand.getDurability() == inHand.getType().getMaxDurability()) {
-                player.sendMessage(MessagesYML.Errors.MAX_DURABILITY.withPrefix(player));
                 return;
             }
 
@@ -350,33 +338,31 @@ public class EventsClass implements Listener {
                         if(!inHand.hasItemMeta()) return;
                         if(!inHand.getItemMeta().hasLore()) return;
 
-                        boolean oneIsFaulty = false;
+                        FileConfiguration gadgetMsg = Utils.getConfigOf("AtomGadgets", "messages");
+                        FileConfiguration gadgetSett = Utils.getConfigOf("AtomGadgets", "settings");
 
-                        for(ConfigPair<Integer, String> pair : SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name)) {
-                            boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey(), player);
-                            if(!result) oneIsFaulty = true;
-                        }
+                        int uses = NBTEditor.getInt(inHand, "uses");
+                        int given = SettingsYML.RepairCosts.OPTIONS.getGivenUses(name);
+                        int maxUses = gadgetSett.getInt(name + ".max-uses");
 
-                        if(oneIsFaulty) {
-                            player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                        if(uses + given == maxUses + given) {
+                            player.sendMessage(MessagesYML.Errors.MAX_USES.withPrefix(player));
                             return;
                         }
 
-                        File loreFile = new File(main.getDataFolder().getPath().replace("AssassinsShops", "AtomGadgets/messages.yml"));
-                        FileConfiguration loreConfig = YamlConfiguration.loadConfiguration(loreFile);
+                        int newUses = Math.min(uses + given, maxUses);
+
+                        if(!CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name))) return;
 
                         ItemMeta im = inHand.getItemMeta();
                         List<String> newLore = im.getLore();
-                        int newUses = NBTEditor.getInt(inHand, "uses");
-                        String usesLine = loreConfig.getString("lore-additions.uses");
-
-                        int given = SettingsYML.RepairCosts.OPTIONS.getGivenUses(name);
+                        String usesLine = gadgetMsg.getString("lore-additions.uses");
 
                         for(String line : inHand.getItemMeta().getLore()) {
                             if(line.startsWith(Utils.color(usesLine.replace("$uses$", "")))) {
                                 int index = newLore.indexOf(line);
 
-                                newLore.set(index, Utils.color(usesLine.replace("$uses$", (newUses + given) + "")));
+                                newLore.set(index, Utils.color(usesLine.replace("$uses$", newUses + "")));
                                 break;
                             }
                         }
@@ -385,15 +371,34 @@ public class EventsClass implements Listener {
                         inHand.setItemMeta(im);
 
                         if(Utils.usesVersionBetween("1.4.x", "1.8.x")) {
-                            player.getInventory().setItemInHand(NBTEditor.set(inHand, newUses + given, "uses"));
+                            player.getInventory().setItemInHand(NBTEditor.set(inHand, newUses, "uses"));
                         } else {
-                            player.getInventory().setItemInMainHand(NBTEditor.set(inHand, newUses + given, "uses"));
+                            player.getInventory().setItemInMainHand(NBTEditor.set(inHand, newUses, "uses"));
                         }
 
                         player.sendMessage(MessagesYML.REPAIRED.withPrefix(player));
+                        return;
                     }
                 }
             }
+
+            short newDur = (short) (inHand.getDurability() - SettingsYML.RepairCosts.OPTIONS.getGivenDurability());
+
+            if(inHand.getDurability() == 0) {
+                player.sendMessage(MessagesYML.Errors.MAX_DURABILITY.withPrefix(player));
+                return;
+            }
+
+            if(newDur < 0) {
+                player.sendMessage(MessagesYML.Errors.NOT_BROKEN_ENOUGH.withPrefix(player)
+                        .replace("$durability$", SettingsYML.RepairCosts.OPTIONS.getGivenDurability() + ""));
+                return;
+            }
+
+            if(!CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getDurabilityCosts())) return;
+
+            inHand.setDurability(newDur);
+            player.sendMessage(MessagesYML.REPAIRED.withPrefix(player));
         }
     }
 }

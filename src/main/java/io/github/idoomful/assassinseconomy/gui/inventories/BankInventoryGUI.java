@@ -5,6 +5,7 @@ import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
 import io.github.idoomful.assassinseconomy.gui.MyGUI;
 import io.github.idoomful.assassinseconomy.gui.Paginable;
+import io.github.idoomful.assassinseconomy.utils.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -43,11 +44,11 @@ public class BankInventoryGUI extends Paginable implements MyGUI, InventoryHolde
             int amount = entry.getValue();
 
             while(amount >= 64) {
-                output.add(SettingsYML.Currencies.OPTIONS.getItem(currency, 64));
+                output.add(Economy.Currency.getItem(currency, 64));
                 amount -= 64;
             }
 
-            if(amount > 0) output.add(SettingsYML.Currencies.OPTIONS.getItem(currency, amount));
+            if(amount > 0) output.add(Economy.Currency.getItem(currency, amount));
         }
 
         return output;

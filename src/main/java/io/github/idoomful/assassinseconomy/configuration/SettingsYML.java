@@ -1,14 +1,11 @@
 package io.github.idoomful.assassinseconomy.configuration;
 
-import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
 import io.github.idoomful.assassinseconomy.utils.Utils;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,81 +30,6 @@ public enum SettingsYML {
     }
     public ItemStack getItem() {
         return ItemBuilder.build(settings.getString(path));
-    }
-
-    public enum Currencies {
-        OPTIONS;
-
-        public String path;
-        public FileConfiguration settings;
-
-        Currencies() {
-            this.path = "currencies";
-            this.settings = SettingsYML._OPTIONS.settings;
-        }
-
-        public List<String> getIDs() {
-            return new ArrayList<>(settings.getConfigurationSection(path).getKeys(false));
-        }
-
-        public boolean hasID(String id) {
-            return getIDs().contains(id);
-        }
-
-        public ItemStack getItem(String id, int amount) {
-            if(hasID(id)) {
-                ItemStack output = ItemBuilder.build(settings.getString(path + "." + id));
-                output.setAmount(amount);
-                return output;
-            }
-
-            ItemStack def = new ItemStack(Material.STONE);
-            ItemMeta im = def.getItemMeta();
-            im.setDisplayName(MessagesYML.Errors.ITEM_INVALID_CURRENCY.color(null));
-            def.setItemMeta(im);
-            return def;
-        }
-
-        public ItemStack getMarkedItem(String id, int amount) {
-            return NBTEditor.set(getItem(id, amount), id, "CurrencyId");
-        }
-    }
-
-    public enum CurrencyWorths {
-        OPTIONS;
-
-        public String path;
-        public FileConfiguration settings;
-
-        CurrencyWorths() {
-            this.path = "currency-worths";
-            this.settings = SettingsYML._OPTIONS.settings;
-        }
-
-        public List<String> getIDs() {
-            return new ArrayList<>(settings.getConfigurationSection(path).getKeys(false));
-        }
-
-        public boolean hasID(String id) {
-            return getIDs().contains(id);
-        }
-
-        public HashMap<String, ConfigPair<Integer, String>> getWorthMap() {
-            HashMap<String, ConfigPair<Integer, String>> output = new HashMap<>();
-            getIDs().forEach(id -> output.put(id, getWorth(id)));
-            return output;
-        }
-
-        public ConfigPair<Integer, String> getWorth(String id) {
-            if(hasID(id)) {
-                return new ConfigPair<>(
-                        Integer.parseInt(settings.getString(path + "." + id).split(" ")[0]),
-                        settings.getString(path + "." + id).split(" ")[1]
-                );
-            }
-
-            return null;
-        }
     }
 
     public enum ShopOptions {
