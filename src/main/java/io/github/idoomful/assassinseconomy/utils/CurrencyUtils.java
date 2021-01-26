@@ -6,6 +6,7 @@ import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -143,7 +144,15 @@ public class CurrencyUtils {
             currency = clone;
         }
 
-        space = getItemSpace(player, Economy.Currency.getMarkedItem(map.get(currency).getValue(), 1));
+        ItemStack filter;
+
+        if(!map.containsKey(currency)) {
+            filter = Economy.Currency.getMarkedItem(currency, 1);
+        } else {
+            filter = Economy.Currency.getMarkedItem(map.get(currency).getValue(), 1);
+        }
+
+        space = getItemSpace(player, filter);
 
         int index = 0;
         int amountAcumulated = 0;
@@ -215,22 +224,47 @@ public class CurrencyUtils {
         }
     }
 
-    public static boolean withdrawCosts(Player player, List<ConfigPair<Integer, String>> costs) {
-        List<ConfigPair<Integer, String>> withdrawnBackup = new ArrayList<>();
+    public static HashMap<String, Integer> withdrawCosts(Player player, List<ConfigPair<Integer, String>> costs) {
+        HashMap<String, Integer> withdrawnBackup = new HashMap<>();
 
         for(ConfigPair<Integer, String> pair : costs) {
             boolean result = CurrencyUtils.withdrawCurrency(pair.getValue(), pair.getKey(), player);
 
             if(result) {
-                withdrawnBackup.add(pair);
+                withdrawnBackup.put(pair.getValue(), pair.getKey());
             } else {
-                withdrawnBackup.forEach(backup -> {
-                    player.getInventory().addItem(Economy.Currency.getMarkedItem(backup.getValue(), backup.getKey()));
+                withdrawnBackup.forEach((curr, amount) -> {
+                    player.getInventory().addItem(Economy.Currency.getMarkedItem(curr, amount));
                 });
+
+                player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                return new HashMap<>();
+            }
+        }
+
+        return withdrawnBackup;
+    }
+
+    public static boolean withdrawMultipliedCosts(Player player, List<ConfigPair<Integer, String>> costs, int mult) {
+        HashMap<String, Integer> withdrawnBackup = new HashMap<>();
+
+        for(int i = 0; i < mult; i++) {
+            HashMap<String, Integer> withdrawn = CurrencyUtils.withdrawCosts(player, costs);
+
+            if(withdrawn.isEmpty()) {
+                for(Map.Entry<String, Integer> pair : withdrawnBackup.entrySet()) {
+                    player.getInventory().addItem(Economy.Currency.getMarkedItem(pair.getKey(), pair.getValue()));
+                }
 
                 player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
                 return false;
             }
+
+            withdrawn.forEach((curr, amount) -> {
+                if(withdrawnBackup.containsKey(curr))
+                    withdrawnBackup.put(curr, withdrawnBackup.get(curr) + amount);
+                else withdrawnBackup.put(curr, amount);
+            });
         }
 
         return true;

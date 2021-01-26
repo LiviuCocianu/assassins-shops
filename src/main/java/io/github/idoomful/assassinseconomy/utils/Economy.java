@@ -5,6 +5,7 @@ import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -69,6 +70,29 @@ public class Economy {
             }
 
             return null;
+        }
+
+        public static int getWorthAbove(String id, int steps) {
+            List<String> ids = Economy.Currency.getIDs();
+
+            if ((ids.indexOf(id) + steps) >= ids.size()) return 0;
+
+            String above = ids.get(ids.indexOf(id) + steps);
+
+            return Integer.parseInt(settings.getString("currency-worths." + above).split(" ")[0]);
+        }
+
+        public static int getWorthBelow(String id, int steps) {
+
+            List<String> ids = Economy.Currency.getIDs();
+
+            if ((ids.indexOf(id) - steps) < 0) return 0;
+
+            String below = ids.get(ids.indexOf(id) - steps);
+
+            if (!getWorthMap().containsKey(below)) return 0;
+
+            return getWorth(below).getKey();
         }
     }
 }

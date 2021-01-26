@@ -401,3 +401,10 @@ shops:
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Strength'&a!"
+      'lockpick':
+        icon: "id:stick name:&eSperaclu lore:&7Unealta_folosita_pentru_a_descuia_un|&7cufar_blocat.|&7|&c[!]_Acest_item_poate_fi_&npierdut&c_daca|&cnu_deschizi_corect_cufarul!"
+        prices:
+          - "5 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Speraclu&a!"

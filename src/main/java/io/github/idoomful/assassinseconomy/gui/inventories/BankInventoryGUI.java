@@ -44,11 +44,11 @@ public class BankInventoryGUI extends Paginable implements MyGUI, InventoryHolde
             int amount = entry.getValue();
 
             while(amount >= 64) {
-                output.add(Economy.Currency.getItem(currency, 64));
+                output.add(Economy.Currency.getMarkedItem(currency, 64));
                 amount -= 64;
             }
 
-            if(amount > 0) output.add(Economy.Currency.getItem(currency, amount));
+            if(amount > 0) output.add(Economy.Currency.getMarkedItem(currency, amount));
         }
 
         return output;

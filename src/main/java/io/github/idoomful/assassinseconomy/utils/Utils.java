@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +48,41 @@ public class Utils {
 
     public static int getEmptySlotCount(Player player) {
         return (int) Arrays.stream(player.getInventory().getContents()).filter(Objects::isNull).count();
+    }
+
+    public static String formatNumber(float num) {
+        NumberFormat output = NumberFormat.getInstance();
+        output.setGroupingUsed(true);
+
+        String formatted = output.format(num).replace(",", ".");
+
+        if(formatted.length() >= 5) {
+            String first = formatted.split("\\.")[0];
+            String second = formatted.split("\\.")[1];
+
+            // ex 2.300 -> 00, 43.556.322 -> 56.322
+            String afterPoint = formatted.substring(first.length() + 2);
+
+            // ex 2.300 -> .300
+            String afterPointIncl = formatted.substring(first.length());
+
+            // ex: 1.000, 999.999
+            if(formatted.length() <= 7) {
+                // 1.000 -> 1k
+                if(!second.matches("[1-9][0-9][0-9]")) formatted = formatted.replace(afterPointIncl, "k");
+                // 1.240 -> 1.2k, 25.003 -> 25.3k
+                else formatted = formatted.replace(afterPoint, "k");
+            }
+            // ex: 1.000.000, 223.002.235
+            else if(formatted.length() >= 9 && formatted.length() <= 11) {
+                // 1.000.000 -> 1k
+                if(!second.matches("[1-9][0-9][0-9]")) formatted = formatted.replace(afterPointIncl, "m");
+                // 1.240 -> 1.2k, 25.003 -> 25.3k
+                else formatted = formatted.replace(afterPoint, "m");
+            }
+        }
+
+        return formatted;
     }
 
     public static FileConfiguration getConfigOf(String plugin, String configName) {

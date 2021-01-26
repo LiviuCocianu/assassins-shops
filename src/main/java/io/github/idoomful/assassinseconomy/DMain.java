@@ -1,6 +1,7 @@
 package io.github.idoomful.assassinseconomy;
 
 import com.google.gson.Gson;
+import io.github.idoomful.assassinseconomy.api.PAPI;
 import io.github.idoomful.assassinseconomy.commands.CommandsClass;
 import io.github.idoomful.assassinseconomy.configuration.ConfigManager;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
@@ -9,6 +10,8 @@ import io.github.idoomful.assassinseconomy.data.SQL.Lite;
 import io.github.idoomful.assassinseconomy.events.EventsClass;
 import io.github.idoomful.assassinseconomy.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinseconomy.gui.inventories.ShopGUI;
+import io.github.idoomful.assassinseconomy.utils.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -33,6 +36,9 @@ public class DMain extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         conf = new ConfigManager<>(this);
+
+        new Economy();
+
         sql = new Lite(this);
         new EventsClass(this);
         new CommandsClass(this);
@@ -46,6 +52,12 @@ public class DMain extends JavaPlugin {
 
             shopCategories.put(id, items);
         });
+
+        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && (new PAPI(this).register())) {
+            Bukkit.getLogger().info(getDescription().getName() + " hooked into PlaceholderAPI successfully..");
+        } else {
+            Bukkit.getLogger().info(getDescription().getName() + " couldn't hook into PlaceholderAPI, proceeding anyway..");
+        }
     }
 
     @Override

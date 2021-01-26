@@ -33,6 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.bukkit.event.EventPriority.MONITOR;
 
@@ -273,7 +274,7 @@ public class EventsClass implements Listener {
                     return;
                 }
 
-                if(!CurrencyUtils.withdrawCosts(player, shopItem.getPrices())) {
+                if(!CurrencyUtils.withdrawMultipliedCosts(player, shopItem.getPrices(), amount)) {
                     chatEvent.remove(player.getUniqueId());
                     targetedItem.remove(player.getUniqueId());
                     return;
@@ -352,7 +353,7 @@ public class EventsClass implements Listener {
 
                         int newUses = Math.min(uses + given, maxUses);
 
-                        if(!CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name))) return;
+                        if(CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name)).isEmpty()) return;
 
                         ItemMeta im = inHand.getItemMeta();
                         List<String> newLore = im.getLore();
@@ -395,7 +396,7 @@ public class EventsClass implements Listener {
                 return;
             }
 
-            if(!CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getDurabilityCosts())) return;
+            if(CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getDurabilityCosts()).isEmpty()) return;
 
             inHand.setDurability(newDur);
             player.sendMessage(MessagesYML.REPAIRED.withPrefix(player));
