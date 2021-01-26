@@ -106,7 +106,7 @@ public class PAPI extends PlaceholderExpansion {
                 }
 
                 if (!isSuperior) inferior = inferior / worth;
-                else if(inBank > 0) superior = superior * worth;
+                else superior = superior * worth;
 
                 Bukkit.broadcastMessage("inferior: " + inferior); // TODO debug
                 Bukkit.broadcastMessage("superior: " + superior); // TODO debug
