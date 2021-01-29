@@ -11,13 +11,10 @@ import io.github.idoomful.assassinseconomy.utils.CurrencyUtils;
 import io.github.idoomful.assassinseconomy.utils.Economy;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class CommandsClass {
@@ -194,6 +191,7 @@ public class CommandsClass {
                         player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                     }
                     break;
+                case "store":
                 case "deposit":
                     if (player.hasPermission(pluginNameLower + ".command.deposit")) {
                         if(args.length == 2) {
@@ -205,7 +203,7 @@ public class CommandsClass {
                                     if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
 
-                                        HashMap<String, Integer> map = new HashMap<>();
+                                        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
                                         Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                         plugin.getSQL().addEntry(player.getName(), map);
 
@@ -223,7 +221,7 @@ public class CommandsClass {
                                 if(!result) {
                                     player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
 
-                                    HashMap<String, Integer> map = new HashMap<>();
+                                    LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
                                     Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                     plugin.getSQL().addEntry(pl.getName(), map);
                                 }
@@ -235,6 +233,7 @@ public class CommandsClass {
                         player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                     }
                     break;
+                case "inv":
                 case "inventory":
                     if (player.hasPermission(pluginNameLower + ".command.inventory")) {
                         if(args.length == 2) {
@@ -246,7 +245,7 @@ public class CommandsClass {
                                     if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
 
-                                        HashMap<String, Integer> map = new HashMap<>();
+                                        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
                                         Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                         plugin.getSQL().addEntry(player.getName(), map);
 
@@ -264,7 +263,7 @@ public class CommandsClass {
                                 if(!result) {
                                     player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
 
-                                    HashMap<String, Integer> map = new HashMap<>();
+                                    LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
                                     Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
                                     plugin.getSQL().addEntry(pl.getName(), map);
                                 }

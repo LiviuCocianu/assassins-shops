@@ -36,6 +36,7 @@ public enum SettingsYML {
         ROWS("rows"),
         PRICE_FORMAT("price-format"),
         PRICE_LORE("price-lore"),
+        CHOICE_TIMER("choice-timer"),
 
         SKIPPING_POINTS("skipping-points"),
         ITEMS_PER_PAGE("items-per-page"),

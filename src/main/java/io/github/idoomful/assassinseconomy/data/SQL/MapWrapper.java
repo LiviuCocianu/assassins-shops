@@ -1,19 +1,19 @@
 package io.github.idoomful.assassinseconomy.data.SQL;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class MapWrapper {
-    private HashMap<String, Integer> map;
+    private LinkedHashMap<String, Integer> map;
 
-    public MapWrapper(HashMap<String, Integer> map) {
+    public MapWrapper(LinkedHashMap<String, Integer> map) {
         this.map = map;
     }
 
-    public HashMap<String, Integer> getMap() {
+    public LinkedHashMap<String, Integer> getMap() {
         return map;
     }
 
-    public void setMap(HashMap<String, Integer> map) {
+    public void setMap(LinkedHashMap<String, Integer> map) {
         this.map = map;
     }
 }

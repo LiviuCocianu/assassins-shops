@@ -77,6 +77,32 @@ public enum MessagesYML {
         }
     }
 
+    public enum Scales {
+        THOUSAND("thousand"),
+        MILLION("million"),
+        BILLION("billion"),
+        TRILLION("trillion"),
+        QUADRILLION("quadrillion"),
+        QUINTILLION("quintillion"),
+        SEXTILLION("sextillion"),
+        SEPTILLION("septillion"),
+        OCTILLION("octillion"),
+        NONILLION("nonillion"),
+        DECILLION("decillion");
+
+        String output;
+        FileConfiguration messages;
+
+        Scales(String output) {
+            messages = MessagesYML.PREFIX.messages;
+            this.output = "scales." + output;
+        }
+
+        public String color() {
+            return messages.getString(output);
+        }
+    }
+
     public enum Errors {
         NO_PERMISSION("no-permission"),
         NOT_ONLINE("not-online"),
@@ -94,7 +120,8 @@ public enum MessagesYML {
         NO_HAND_ITEM("no-hand-item"),
         MAX_USES("max-uses"),
         MAX_DURABILITY("max-durability"),
-        NOT_BROKEN_ENOUGH("not-broken-enough");
+        NOT_BROKEN_ENOUGH("not-broken-enough"),
+        TOOK_TOO_LONG("took-too-long");
 
         String output;
         FileConfiguration messages;

@@ -3,18 +3,20 @@ package io.github.idoomful.assassinseconomy.data.SQL;
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import io.github.idoomful.assassinseconomy.utils.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Lite {
     private Connection con = null;
     private final DMain plugin;
 
-    // TODO set these up
     private final String DATABASE = "players";
     private final String TABLE = "balance";
 
@@ -68,7 +70,7 @@ public class Lite {
         }
     }
 
-    public void addEntry(String player, HashMap<String, Integer> balances) {
+    public void addEntry(String player, LinkedHashMap<String, Integer> balances) {
         try(PreparedStatement ps = con.prepareStatement("INSERT INTO " + TABLE + " (name,balanceMap) VALUES (?,?)")) {
             ps.setString(1, player);
             ps.setString(2, plugin.getGson().toJson(new MapWrapper(balances)));
@@ -87,7 +89,7 @@ public class Lite {
         }
     }
 
-    public void getCurrencies(String player, Callback<HashMap<String, Integer>> result) {
+    public void getCurrencies(String player, Callback<LinkedHashMap<String, Integer>> result) {
         try(PreparedStatement ps = con.prepareStatement("SELECT `balanceMap` FROM " + TABLE + " WHERE `name`=?")) {
             ps.setString(1, player);
             ResultSet rs = ps.executeQuery();
@@ -100,7 +102,7 @@ public class Lite {
                         if(!map.getMap().containsKey(id)) map.getMap().put(id, 0);
                     });
                 } else if(Economy.Currency.getIDs().size() < map.getMap().size()) {
-                    new HashMap<>(map.getMap()).keySet().forEach(id -> {
+                    map.getMap().keySet().forEach(id -> {
                         if(!Economy.Currency.getIDs().contains(id)) map.getMap().remove(id);
                     });
                 }
@@ -112,7 +114,7 @@ public class Lite {
         }
     }
 
-    public void setCurrencies(String player, HashMap<String, Integer> map) {
+    public void setCurrencies(String player, LinkedHashMap<String, Integer> map) {
         try(PreparedStatement ps = con.prepareStatement("UPDATE " + TABLE + " SET `balanceMap`=? WHERE `name`=?")) {
             ps.setString(1, plugin.getGson().toJson(new MapWrapper(map)));
             ps.setString(2, player);
@@ -124,7 +126,7 @@ public class Lite {
 
     public void addCurrency(String player, String currency, int amount) {
         getCurrencies(player, map -> {
-            HashMap<String, Integer> output = new HashMap<>(map);
+            LinkedHashMap<String, Integer> output = new LinkedHashMap<>(map);
             Integer old = output.get(currency);
             output.put(currency, old + amount);
             setCurrencies(player, output);
@@ -133,7 +135,7 @@ public class Lite {
 
     public void subtractCurrency(String player, String currency, int amount) {
         getCurrencies(player, map -> {
-            HashMap<String, Integer> output = new HashMap<>(map);
+            LinkedHashMap<String, Integer> output = new LinkedHashMap<>(map);
             output.put(currency, Math.max((output.get(currency) - amount), 0));
             setCurrencies(player, output);
         });

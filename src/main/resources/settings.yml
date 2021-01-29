@@ -20,6 +20,10 @@ shop-options:
     - "&fPret:"
     - "&8» $prices$"
 
+  # The amount of time in seconds in which the player has to specify an amount for the chosen item
+  # before the choice is automatically cancelled if no amount is provided
+  choice-timer: 10
+
   # Pagination settings for the shop
   skipping-points: [0, 8, 9, 17, 18, 26, 27]
   items-per-page: 21

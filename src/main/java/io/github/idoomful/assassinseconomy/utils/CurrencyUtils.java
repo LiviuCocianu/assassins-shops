@@ -4,9 +4,7 @@ import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
-import io.github.idoomful.assassinseconomy.configuration.SettingsYML;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -123,7 +121,7 @@ public class CurrencyUtils {
 
         String currency = getFirstCurrencyType(player, way);
 
-        HashMap<String, ConfigPair<Integer, String>> map = Economy.Worth.getWorthMap();
+        LinkedHashMap<String, ConfigPair<Integer, String>> map = Economy.Worth.getWorthMap();
         int space;
 
         while(

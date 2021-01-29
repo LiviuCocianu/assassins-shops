@@ -1,6 +1,7 @@
 package io.github.idoomful.assassinseconomy.utils;
 
 import io.github.idoomful.assassinseconomy.DMain;
+import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +14,7 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -50,36 +52,54 @@ public class Utils {
         return (int) Arrays.stream(player.getInventory().getContents()).filter(Objects::isNull).count();
     }
 
-    public static String formatNumber(float num) {
-        NumberFormat output = NumberFormat.getInstance();
+    public static String formatNumber(double num, boolean includeDecimals) {
+        DecimalFormat output = new DecimalFormat("###,###,###,###,###");
         output.setGroupingUsed(true);
+
+        double decimals = num - ((int) num);
+
+        String strDecimals = (decimals + "").replaceAll("^0\\.", "").replace(".", ",");
+        strDecimals = strDecimals.equals(",0") ? "" : strDecimals;
+        strDecimals = !strDecimals.equals("") && strDecimals.length() >= 2 ? strDecimals.substring(0, 2) : "";
 
         String formatted = output.format(num).replace(",", ".");
 
-        if(formatted.length() >= 5) {
+        String integer = formatted.replace(".", "");
+
+        if(integer.length() >= 4) {
             String first = formatted.split("\\.")[0];
             String second = formatted.split("\\.")[1];
 
-            // ex 2.300 -> 00, 43.556.322 -> 56.322
-            String afterPoint = formatted.substring(first.length() + 2);
+            String symbol = "";
 
-            // ex 2.300 -> .300
-            String afterPointIncl = formatted.substring(first.length());
+            if(integer.length() <= 6) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.THOUSAND.color() : MessagesYML.Scales.THOUSAND.color();
+            } else if(integer.length() <= 9) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.MILLION.color() : MessagesYML.Scales.MILLION.color();
+            } else if(integer.length() <= 12) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.BILLION.color() : MessagesYML.Scales.BILLION.color();
+            } else if(integer.length() <= 15) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.TRILLION.color() : MessagesYML.Scales.TRILLION.color();
+            } else if(integer.length() <= 18) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.QUADRILLION.color() : MessagesYML.Scales.QUADRILLION.color();
+            } else if(integer.length() <= 21) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.QUINTILLION.color() : MessagesYML.Scales.QUINTILLION.color();
+            } else if(integer.length() <= 24) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.SEXTILLION.color() : MessagesYML.Scales.SEXTILLION.color();
+            } else if(integer.length() <= 27) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.SEPTILLION.color() : MessagesYML.Scales.SEPTILLION.color();
+            } else if(integer.length() <= 30) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.OCTILLION.color() : MessagesYML.Scales.OCTILLION.color();
+            } else if(integer.length() <= 33) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.NONILLION.color() : MessagesYML.Scales.NONILLION.color();
+            } else if(integer.length() <= 36) {
+                symbol = decimals > 0 && includeDecimals ? "," + strDecimals + MessagesYML.Scales.DECILLION.color() : MessagesYML.Scales.DECILLION.color();
+            }
 
-            // ex: 1.000, 999.999
-            if(formatted.length() <= 7) {
-                // 1.000 -> 1k
-                if(!second.matches("[1-9][0-9][0-9]")) formatted = formatted.replace(afterPointIncl, "k");
-                // 1.240 -> 1.2k, 25.003 -> 25.3k
-                else formatted = formatted.replace(afterPoint, "k");
-            }
-            // ex: 1.000.000, 223.002.235
-            else if(formatted.length() >= 9 && formatted.length() <= 11) {
-                // 1.000.000 -> 1k
-                if(!second.matches("[1-9][0-9][0-9]")) formatted = formatted.replace(afterPointIncl, "m");
-                // 1.240 -> 1.2k, 25.003 -> 25.3k
-                else formatted = formatted.replace(afterPoint, "m");
-            }
+            if(!second.matches("[0-9][0-9][1-9]")) formatted = formatted.substring(0, first.length()) + symbol;
+            else formatted = formatted.substring(0, first.length() + 3) + symbol;
+        } else if(includeDecimals) {
+            if(!strDecimals.equals("")) formatted = formatted + "," + strDecimals;
         }
 
         return formatted;

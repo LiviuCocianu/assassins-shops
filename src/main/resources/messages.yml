@@ -18,6 +18,18 @@ currencies:
   gold: "&eMoneda de aur"
   gold_bag: "&e&lSac cu aur"
   crystal: "&bCristal"
+scales:
+  'thousand': "k"
+  'million': "mil"
+  'billion': "mld"
+  'trillion': "trl"
+  'quadrillion': "qdr"
+  'quintillion': "qnt"
+  'sextillion': "sxt"
+  'septillion': "spt"
+  'octillion': "oct"
+  'nonillion': "nnl"
+  'decillion': "dcl"
 errors:
   no-permission: "&cNu ai permisiunea sa faci asta!"
   not-online: "&cJucatorul trebuie sa fie online"
@@ -36,6 +48,7 @@ errors:
   max-durability: "&cAcest item este deja reparat complet"
   max-uses: "&cAcest item are numarul de utilizari la maxim"
   not-broken-enough: "&cAcestui item trebuie sa-i lipseasca cel putin $durability$ durabilitate pentru a putea fi reparat"
+  took-too-long: "&cNu ai specificat cantitatea pentru item-ul selectat la timp, asa ca tranzactia a fost anulata automat"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsShop  &7&m---------*-"

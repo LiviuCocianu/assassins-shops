@@ -162,6 +162,13 @@ public class EventsClass implements Listener {
                         targetedItem.put(player.getUniqueId(), shopItem);
                         player.closeInventory();
                         player.sendMessage(MessagesYML.SPECIFY_AMOUNT.withPrefix(player));
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(main, () -> {
+                            if(chatEvent.contains(player.getUniqueId())) {
+                                chatEvent.remove(player.getUniqueId());
+                                player.sendMessage(MessagesYML.Errors.TOOK_TOO_LONG.withPrefix(player));
+                            }
+                        }, 20 * SettingsYML.ShopOptions.CHOICE_TIMER.getInt());
                     }
                 }
             }

@@ -5,14 +5,13 @@ import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.configuration.ConfigPair;
 import io.github.idoomful.assassinseconomy.configuration.MessagesYML;
 import io.github.idoomful.assassinseconomy.gui.ItemBuilder;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Economy {
@@ -55,8 +54,8 @@ public class Economy {
             return getIDs().contains(id);
         }
 
-        public static HashMap<String, ConfigPair<Integer, String>> getWorthMap() {
-            HashMap<String, ConfigPair<Integer, String>> output = new HashMap<>();
+        public static LinkedHashMap<String, ConfigPair<Integer, String>> getWorthMap() {
+            LinkedHashMap<String, ConfigPair<Integer, String>> output = new LinkedHashMap<>();
             getIDs().forEach(id -> output.put(id, getWorth(id)));
             return output;
         }
