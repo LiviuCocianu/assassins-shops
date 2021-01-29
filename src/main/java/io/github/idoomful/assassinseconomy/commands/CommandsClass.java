@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandsClass {
     public CommandsClass(DMain plugin) {
@@ -196,6 +197,13 @@ public class CommandsClass {
                     if (player.hasPermission(pluginNameLower + ".command.deposit")) {
                         if(args.length == 2) {
                             plugin.getSQL().exists(args[1], result -> {
+                                if (!Bukkit.getOfflinePlayer(args[1]).isOnline()) {
+                                    if(player instanceof Player) {
+                                        player.sendMessage(MessagesYML.Errors.NOT_ONLINE.withPrefix(arg));
+                                    }
+                                    return;
+                                }
+
                                 Player target = Bukkit.getPlayer(args[1]);
 
                                 if(result) new BankGUI(target);
@@ -238,6 +246,13 @@ public class CommandsClass {
                     if (player.hasPermission(pluginNameLower + ".command.inventory")) {
                         if(args.length == 2) {
                             plugin.getSQL().exists(args[1], result -> {
+                                if (!Bukkit.getOfflinePlayer(args[1]).isOnline()) {
+                                    if(player instanceof Player) {
+                                        player.sendMessage(MessagesYML.Errors.NOT_ONLINE.withPrefix(arg));
+                                    }
+                                    return;
+                                }
+
                                 Player target = Bukkit.getPlayer(args[1]);
 
                                 if(result) plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
@@ -270,6 +285,51 @@ public class CommandsClass {
 
                                 plugin.getOpenedBanks().put(pl.getUniqueId(), new BankInventoryGUI(pl));
                             });
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
+                    break;
+                case "set":
+                    if (player.hasPermission(pluginNameLower + ".command.set")) {
+                        if(args.length >= 3) {
+                            String target = args[1];
+
+                            if (Economy.Currency.hasID(args[2])) {
+                                try {
+                                    String currency = args[2];
+                                    int amount = args.length == 4 ? Integer.parseInt(args[3]) : -69420;
+
+                                    if(amount == -69420) {
+                                        player.sendMessage(MessagesYML.Errors.NO_NUMBER_SPECIFIED.withPrefix(arg));
+                                        return;
+                                    }
+
+                                    if(amount < 0) {
+                                        player.sendMessage(MessagesYML.Errors.NO_NEGATIVE.withPrefix(arg));
+                                        return;
+                                    }
+
+                                    AtomicReference<LinkedHashMap<String, Integer>> map = new AtomicReference<>();
+                                    plugin.getSQL().getCurrencies(target, map::set);
+
+                                    map.get().put(currency, amount);
+
+                                    plugin.getSQL().setCurrencies(target, map.get());
+
+                                    player.sendMessage(MessagesYML.CURRENCY_SET.withPrefix(arg)
+                                            .replace("$currency$", currency)
+                                            .replace("$player$", target)
+                                            .replace("$amount$", Utils.formatNumber(amount, false))
+                                    );
+                                } catch (NumberFormatException ne) {
+                                    player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(arg));
+                                }
+                            } else {
+                                player.sendMessage(MessagesYML.Errors.INVALID_CURRENCY.withPrefix(arg));
+                            }
+                        } else {
+                            player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
                         }
                     } else {
                         player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));

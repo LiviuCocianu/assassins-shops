@@ -28,7 +28,8 @@ public enum MessagesYML {
     CURRENCY_FORMAT("currency-format"),
     CURRENCY_SEPARATOR("currency-separator"),
     CURRENCY_SAVED("currency-saved"),
-    REPAIRED("repaired");
+    REPAIRED("repaired"),
+    CURRENCY_SET("currency-set");
 
     String output;
     FileConfiguration messages;
@@ -110,6 +111,7 @@ public enum MessagesYML {
         INVALID_CURRENCY("invalid-currency"),
         INVALID_SHOP("invalid-shop"),
         NO_NUMBER("no-number"),
+        NO_NUMBER_SPECIFIED("no-number-specified"),
         TRANSACTION_ERROR("transaction-error"),
         WRONG_ARGUMENT_COUNT("wrong-argument-count"),
         NO_NEGATIVE("no-negative"),
