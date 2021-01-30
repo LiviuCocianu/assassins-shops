@@ -4,6 +4,7 @@ import io.github.idoomful.assassinseconomy.DMain;
 import io.github.idoomful.assassinseconomy.utils.Economy;
 import io.github.idoomful.assassinseconomy.utils.Utils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,12 +45,33 @@ public class PAPI extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String identifier) {
+        String pl = player.getName();
+        String phCurrency = "";
+
+        String[] subs = {
+                "currency", "curr", "c", "currencymix", "currmix", "mix", "m",
+                "currencymixd", "currmixd", "mixd", "md"
+        };
+
+        for(String sub : subs) {
+            if(identifier.startsWith(sub + "_")) {
+                phCurrency = identifier.replaceFirst("_", "*").split("\\*")[1];
+
+                // Handle placeholders of this format: acurrency_c_gold@iDoomful
+                if(identifier.contains("@")) {
+                    pl = phCurrency.split("@")[1];
+                    phCurrency = phCurrency.split("@")[0];
+                }
+                break;
+            }
+        }
+
         if(identifier.startsWith("currency_") || identifier.startsWith("curr_") || identifier.startsWith("c_")) {
-            String phCurrency = identifier.replaceFirst("_", "*").split("\\*")[1];
             AtomicReference<LinkedHashMap<String, Integer>> inv = new AtomicReference<>(null);
 
-            plugin.getSQL().exists(player.getName(), res -> {
-                if(res) plugin.getSQL().getCurrencies(player.getName(), inv::set);
+            String finalPl = pl;
+            plugin.getSQL().exists(pl, res -> {
+                if(res) plugin.getSQL().getCurrencies(finalPl, inv::set);
             });
 
             if(inv.get() == null || !inv.get().containsKey(phCurrency)) return "0";
@@ -58,18 +80,17 @@ public class PAPI extends PlaceholderExpansion {
         }
 
         if(identifier.startsWith("currencymix_") || identifier.startsWith("currmix_") || identifier.startsWith("mix_") || identifier.startsWith("m_")) {
-            return mixCurrencies(identifier, player.getName(), false);
+            return mixCurrencies(pl, phCurrency, false);
         }
 
         if(identifier.startsWith("currencymixd_") || identifier.startsWith("currmixd_") || identifier.startsWith("mixd_") || identifier.startsWith("md_")) {
-            return mixCurrencies(identifier, player.getName(), true);
+            return mixCurrencies(pl, phCurrency, true);
         }
 
         return null;
     }
 
-    private String mixCurrencies(String identifier, String player, boolean includeDecimals) {
-        String phCurrency = identifier.replaceFirst("_", "*").split("\\*")[1];
+    private String mixCurrencies(String player, String phCurr, boolean includeDecimals) {
         AtomicReference<LinkedHashMap<String, Integer>> bank = new AtomicReference<>(null);
 
         plugin.getSQL().exists(player, res -> {
@@ -86,7 +107,7 @@ public class PAPI extends PlaceholderExpansion {
         for (String currency : Economy.Currency.getIDs()) {
             int inBank = bank.get().get(currency);
 
-            if (phCurrency.equals(currency)) {
+            if (phCurr.equals(currency)) {
                 mixed += inBank;
                 isSuperior = true;
                 index += 100;

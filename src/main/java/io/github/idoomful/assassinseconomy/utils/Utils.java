@@ -61,6 +61,7 @@ public class Utils {
         String strDecimals = (decimals + "").replaceAll("^0\\.", "").replace(".", ",");
         strDecimals = strDecimals.equals(",0") ? "" : strDecimals;
         strDecimals = !strDecimals.equals("") && strDecimals.length() >= 2 ? strDecimals.substring(0, 2) : "";
+        strDecimals = strDecimals.replaceAll(",$", "");
 
         String formatted = output.format(num).replace(",", ".");
 
