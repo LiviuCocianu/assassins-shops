@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.idoomful</groupId>
-    <artifactId>AssassinsShops</artifactId>
+    <artifactId>AssassinsCurrencyCore</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>AssassinsShops</name>
+    <name>AssassinsCurrencyCore</name>
 
     <properties>
         <java.version>1.8</java.version>

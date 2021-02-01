@@ -1,5 +1,5 @@
-name: AssassinsShops
+name: AssassinsCurrencyCore
 version: ${project.version}
-main: io.github.idoomful.assassinseconomy.DMain
+main: io.github.idoomful.assassinscurrencycore.DMain
 authors: [iDoomful]
 description: "Assassins component"

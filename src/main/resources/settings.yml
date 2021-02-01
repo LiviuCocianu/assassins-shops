@@ -33,7 +33,7 @@ shop-options:
   previous-button-slots: [0, 9, 18]
 
 bank-options:
-  title: "Depoziteaza monedele aici"
+  title: "Banca » Depoziteaza aici"
   rows: 6
   items:
     '#': "id:stained_glass_pane:7 name:_"
@@ -49,7 +49,7 @@ bank-options:
     - "# # # # # # # # #"
 
 bank-inventory-options:
-  title: "Inventarul bancii tale"
+  title: "Banca » Inventar"
   rows: 6
   skipping-points: [0, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 53]
 
@@ -80,6 +80,16 @@ repair-costs:
       uses-given: 3
       costs:
         - "1 silver"
+
+sounds:
+  # Will play when an item was bought on shop or when money was stored
+  successful-action: "VILLAGER_YES 5 1"
+  # Will play when players turn a page in their bank GUIs or shop menus
+  page-turn: "CLICK 5 2"
+  # Will play when players are required to specify the amount of items they want to buy
+  require-input: "VILLAGER_HAGGLE 5 1"
+  # Will play when players cancel specifying the amount
+  cancel-input: "VILLAGER_NO 5 1"
 
 shops:
   combat:
