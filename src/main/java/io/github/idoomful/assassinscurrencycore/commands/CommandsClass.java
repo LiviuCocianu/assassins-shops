@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandsClass {
@@ -68,6 +69,8 @@ public class CommandsClass {
                                     item.setAmount(amount);
 
                                     item = NBTEditor.set(item, SettingsYML.WalletOptions.DEFAULT_ROWS.getInt(), "WalletRows");
+                                    item = NBTEditor.set(item, UUID.randomUUID().toString(), "WalletId");
+
                                     for(String curr : Economy.Currency.getIDs()) {
                                         item = NBTEditor.set(item, 0, curr);
                                     }

@@ -43,7 +43,7 @@ public class EventsClass implements Listener {
 
     private final ArrayList<UUID> chatEvent = new ArrayList<>();
     private final HashMap<UUID, ShopItem> targetedItem = new HashMap<>();
-    private final HashMap<UUID, LinkedHashMap<String, Integer>> wallets = new HashMap<>();
+    public static final HashMap<UUID, LinkedHashMap<String, Integer>> wallets = new HashMap<>();
 
     public EventsClass(DMain main) {
         this.main = main;
@@ -75,9 +75,13 @@ public class EventsClass implements Listener {
         Inventory inv = e.getInventory();
 
         if(inv.getHolder() instanceof WalletGUI) {
-            LinkedHashMap<String, Integer> wallet = new LinkedHashMap<>();
-            Economy.Currency.getIDs().forEach(curr -> wallet.put(curr, 0));
-            wallets.put(player.getUniqueId(), wallet);
+            ItemStack wallet = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                    ? player.getItemInHand()
+                    : player.getInventory().getItemInMainHand();
+
+            LinkedHashMap<String, Integer> walletContent = new LinkedHashMap<>();
+            Economy.Currency.getIDs().forEach(curr -> walletContent.put(curr, NBTEditor.getInt(wallet, curr)));
+            wallets.put(player.getUniqueId(), walletContent);
         }
     }
 
@@ -92,6 +96,18 @@ public class EventsClass implements Listener {
         if(inv.getHolder() instanceof WalletGUI) {
             for(String curr : wallets.get(player.getUniqueId()).keySet()) {
                 wallet = NBTEditor.set(wallet, wallets.get(player.getUniqueId()).get(curr), curr);
+            }
+
+            int size = 0;
+
+            for(String id : Economy.Currency.getIDs()) {
+                if(NBTEditor.contains(wallet, id)) size++;
+            }
+
+            if(Economy.Currency.getIDs().size() > size) {
+                for(String id : Economy.Currency.getIDs()) {
+                    if(!NBTEditor.contains(wallet, id)) wallet = NBTEditor.set(wallet, 0, id);
+                }
             }
 
             if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
@@ -228,109 +244,121 @@ public class EventsClass implements Listener {
                 || e.getView().getTopInventory().getHolder() instanceof WalletGUI)) {
 
             if(e.getView().getTopInventory().getHolder() instanceof WalletGUI) {
-                Bukkit.broadcastMessage("test 1"); // TODO debug
                 if(e.getView().getTopInventory().equals(e.getClickedInventory())) {
-                    Bukkit.broadcastMessage("test 2"); // TODO debug
                     if(e.getClick() == ClickType.MIDDLE) return;
 
                     ItemStack add = e.getCursor();
 
-                    Bukkit.broadcastMessage("test 3"); // TODO debug
-                    if(e.getCurrentItem().getType() == Material.AIR && add.getType() != Material.AIR) {
-                        Bukkit.broadcastMessage("test 4"); // TODO debug
+                    if(add.getType() != Material.AIR) {
                         if(NBTEditor.contains(add, "CurrencyId")) {
-                            Bukkit.broadcastMessage("test 5"); // TODO debug
-                            String currency = NBTEditor.getString(add, "CurrencyId");
-                            wallets.get(player.getUniqueId()).put(currency, wallets.get(player.getUniqueId()).get(currency) + add.getAmount());
+                            String currencyCursor = NBTEditor.getString(add, "CurrencyId");
+                            int amount = wallets.get(player.getUniqueId()).get(currencyCursor);
+
+                            if(clicked.getType() != Material.AIR) {
+                                if(NBTEditor.contains(clicked, "CurrencyId")) {
+                                    String currencyClicked = NBTEditor.getString(clicked, "CurrencyId");
+
+                                    if(currencyCursor.equals(currencyClicked)) {
+                                        wallets.get(player.getUniqueId()).put(currencyCursor, amount + add.getAmount());
+                                    } else e.setCancelled(true);
+
+                                    return;
+                                }
+                            }
+
+                            wallets.get(player.getUniqueId()).put(currencyCursor, amount + add.getAmount());
+                            return;
                         } else e.setCancelled(true);
                     } else {
-                        e.setCancelled(true);
+                        if(add.getType() != Material.AIR) {
+                            if(NBTEditor.contains(clicked, "CurrencyId") && NBTEditor.contains(add, "CurrencyId")) {
+                                if(!NBTEditor.getString(clicked, "CurrencyId").equals(NBTEditor.getString(add, "CurrencyId"))) {
+                                    e.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                HashMap<String, Integer> toDeposit = new HashMap<>();
+
+                if(e.getCurrentItem().getType() == Material.AIR) return;
+
+                // Check if they clicked on the deposit icon
+                if(clicked.isSimilar(SettingsYML.BankOptions.ITEMS.getItem("d"))) {
+                    e.setCancelled(true);
+                    boolean isEmpty = true;
+
+                    for(int i = 0; i < 27; i++) {
+                        if(e.getClickedInventory().getContents()[i] != null) {
+                            isEmpty = false;
+                            break;
+                        }
+                    }
+
+                    if(isEmpty) {
+                        player.sendMessage(MessagesYML.Errors.NO_STORED_CURRENCY.withPrefix(player));
                         return;
                     }
-                }
 
-                return;
-            }
+                    for(ItemStack item : e.getClickedInventory().getContents()) {
+                        if(item == null) continue;
 
-            HashMap<String, Integer> toDeposit = new HashMap<>();
-
-            if(e.getCurrentItem().getType() == Material.AIR) return;
-
-            // Check if they clicked on the deposit icon
-            if(clicked.isSimilar(SettingsYML.BankOptions.ITEMS.getItem("d"))) {
-                e.setCancelled(true);
-                boolean isEmpty = true;
-
-                for(int i = 0; i < 27; i++) {
-                    if(e.getClickedInventory().getContents()[i] != null) {
-                        isEmpty = false;
-                        break;
+                        if(NBTEditor.contains(item, "CurrencyId")) {
+                            String currency = NBTEditor.getString(item, "CurrencyId");
+                            if(!toDeposit.containsKey(currency)) toDeposit.put(currency, 0);
+                            toDeposit.put(currency, toDeposit.get(currency) + item.getAmount());
+                        }
                     }
-                }
 
-                if(isEmpty) {
-                    player.sendMessage(MessagesYML.Errors.NO_STORED_CURRENCY.withPrefix(player));
-                    return;
-                }
+                    StringBuilder currencies = new StringBuilder();
 
-                for(ItemStack item : e.getClickedInventory().getContents()) {
-                    if(item == null) continue;
+                    int index = 0;
+                    for(Map.Entry<String, Integer> entry : toDeposit.entrySet()) {
+                        index++;
+                        String currency = entry.getKey();
+                        int amount = entry.getValue();
 
-                    if(NBTEditor.contains(item, "CurrencyId")) {
-                        String currency = NBTEditor.getString(item, "CurrencyId");
-                        if(!toDeposit.containsKey(currency)) toDeposit.put(currency, 0);
-                        toDeposit.put(currency, toDeposit.get(currency) + item.getAmount());
+                        main.getSQL().addToBank(player.getName(), currency, amount);
+
+                        currencies.append(MessagesYML.CURRENCY_FORMAT.color(player)
+                                .replace("$amount$", amount + "")
+                                .replace("$currency$", MessagesYML.Currencies.OPTIONS.getString(currency))
+                        );
+
+                        if(index != toDeposit.size()) currencies.append(MessagesYML.CURRENCY_SEPARATOR.color(player));
                     }
+
+
+                    /*
+
+                    When a player closes the bank with money inside, without sending the money
+                    they can lose it, so there is a system that gives them the money back on close.
+
+                    Though, in this case they sent the money, so we'll remove it from the bank GUI
+                    to prevent duping.
+
+                    */
+                    for(int i = 0; i < 27; i++) e.getClickedInventory().setItem(i, null);
+
+                    e.setCurrentItem(null);
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(main, player::closeInventory, 3);
+
+                    player.sendMessage(MessagesYML.CURRENCY_SAVED.withPrefix(player)
+                            .replace("$currencies$", Utils.color(currencies.toString())));
+
+                    SettingsYML.SFX.SUCCESSFUL_ACTION.playSoundFor(player);
+                } else if(!NBTEditor.contains(clicked, "CurrencyId")) {
+                    e.setCancelled(true);
                 }
-
-                StringBuilder currencies = new StringBuilder();
-
-                int index = 0;
-                for(Map.Entry<String, Integer> entry : toDeposit.entrySet()) {
-                    index++;
-                    String currency = entry.getKey();
-                    int amount = entry.getValue();
-
-                    main.getSQL().addToBank(player.getName(), currency, amount);
-
-                    currencies.append(MessagesYML.CURRENCY_FORMAT.color(player)
-                            .replace("$amount$", amount + "")
-                            .replace("$currency$", MessagesYML.Currencies.OPTIONS.getString(currency))
-                    );
-
-                    if(index != toDeposit.size()) currencies.append(MessagesYML.CURRENCY_SEPARATOR.color(player));
-                }
-
-
-                /*
-
-                When a player closes the bank with money inside, without sending the money
-                they can lose it, so there is a system that gives them the money back on close.
-
-                Though, in this case they sent the money, so we'll remove it from the bank GUI
-                to prevent duping.
-
-                 */
-                for(int i = 0; i < 27; i++) e.getClickedInventory().setItem(i, null);
-
-                e.setCurrentItem(null);
-
-                Bukkit.getScheduler().scheduleSyncDelayedTask(main, player::closeInventory, 3);
-
-                player.sendMessage(MessagesYML.CURRENCY_SAVED.withPrefix(player)
-                        .replace("$currencies$", Utils.color(currencies.toString())));
-
-                SettingsYML.SFX.SUCCESSFUL_ACTION.playSoundFor(player);
-            } else if(!NBTEditor.contains(clicked, "CurrencyId")) {
-                e.setCancelled(true);
             }
-        } else if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI
+        }
+
+        if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI
                 || e.getClickedInventory().getHolder() instanceof WalletGUI) {
             boolean isBank = false;
-
-            ItemStack wallet = Utils.usesVersionBetween("1.4.x", "1.8.x")
-                    ? player.getItemInHand()
-                    : player.getInventory().getItemInMainHand();
 
             if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI) {
                 isBank = true;
@@ -352,6 +380,10 @@ public class EventsClass implements Listener {
                 }
             }
 
+            ItemStack wallet = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                    ? player.getItemInHand()
+                    : player.getInventory().getItemInMainHand();
+
             if(e.getClick() == ClickType.MIDDLE) return;
 
             // If they have an item in their cursor
@@ -365,15 +397,22 @@ public class EventsClass implements Listener {
 
                 if(isBank) main.getSQL().subtractFromBank(player.getName(), currency, clicked.getAmount());
                 else {
+                    if(e.getCursor().getType() != Material.AIR && NBTEditor.contains(e.getCursor(), "CurrencyId")) {
+                        if(currency.equals(NBTEditor.getString(e.getCursor(), "CurrencyId"))) {
+                            e.setCancelled(true);
+                            return;
+                        }
+                    }
+
                     int subtract = NBTEditor.getInt(wallet, currency) - clicked.getAmount();
                     subtract = Math.max(subtract, 0);
-                    wallet = NBTEditor.set(wallet, subtract);
 
-                    if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
-                    else player.getInventory().setItemInMainHand(wallet);
+                    wallets.get(player.getUniqueId()).put(currency, subtract);
                 }
             }
-        } else if((e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI
+        }
+
+        if((e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI
                 || e.getView().getTopInventory().getHolder() instanceof WalletGUI)
                 && e.getView().getBottomInventory().equals(e.getClickedInventory())) {
             if(e.isShiftClick()) e.setCancelled(true);

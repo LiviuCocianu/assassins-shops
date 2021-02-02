@@ -1,6 +1,7 @@
 package io.github.idoomful.assassinscurrencycore;
 
 import com.google.gson.Gson;
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinscurrencycore.api.PAPI;
 import io.github.idoomful.assassinscurrencycore.commands.CommandsClass;
 import io.github.idoomful.assassinscurrencycore.configuration.ConfigManager;
@@ -10,8 +11,12 @@ import io.github.idoomful.assassinscurrencycore.data.SQL.Lite;
 import io.github.idoomful.assassinscurrencycore.events.EventsClass;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.ShopGUI;
+import io.github.idoomful.assassinscurrencycore.gui.inventories.WalletGUI;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
+import io.github.idoomful.assassinscurrencycore.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -30,7 +35,7 @@ public class DMain extends JavaPlugin {
     private final HashMap<UUID, BankInventoryGUI> banks = new HashMap<>();
     private Lite sql;
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     public void onEnable() {
@@ -62,7 +67,39 @@ public class DMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            if(player.getOpenInventory().getTopInventory().getHolder() instanceof WalletGUI) {
+                Inventory inv = player.getOpenInventory().getTopInventory();
+                ItemStack wallet = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                        ? player.getItemInHand()
+                        : player.getInventory().getItemInMainHand();
 
+                if(inv.getHolder() instanceof WalletGUI) {
+                    for(String curr : EventsClass.wallets.get(player.getUniqueId()).keySet()) {
+                        wallet = NBTEditor.set(wallet, EventsClass.wallets.get(player.getUniqueId()).get(curr), curr);
+                    }
+
+                    int size = 0;
+
+                    for(String id : Economy.Currency.getIDs()) {
+                        if(NBTEditor.contains(wallet, id)) size++;
+                    }
+
+                    if(Economy.Currency.getIDs().size() > size) {
+                        for(String id : Economy.Currency.getIDs()) {
+                            if(!NBTEditor.contains(wallet, id)) wallet = NBTEditor.set(wallet, 0, id);
+                        }
+                    }
+
+                    if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
+                    else player.getInventory().setItemInMainHand(wallet);
+
+                    EventsClass.wallets.remove(player.getUniqueId());
+                }
+                
+                player.closeInventory();
+            }
+        });
     }
 
     public static DMain getInstance() {
