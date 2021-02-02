@@ -22,7 +22,8 @@ public enum MessagesYML {
     CURRENCY_SEPARATOR("currency-separator"),
     CURRENCY_SAVED("currency-saved"),
     REPAIRED("repaired"),
-    CURRENCY_SET("currency-set");
+    CURRENCY_SET("currency-set"),
+    GIVEN_ITEM("given-item");
 
     String output;
     FileConfiguration messages;

@@ -70,7 +70,7 @@ public class PAPI extends PlaceholderExpansion {
 
             String finalPl = pl;
             plugin.getSQL().exists(pl, res -> {
-                if(res) plugin.getSQL().getCurrencies(finalPl, inv::set);
+                if(res) plugin.getSQL().getBankInventory(finalPl, inv::set);
             });
 
             if(inv.get() == null || !inv.get().containsKey(phCurrency)) return "0";
@@ -93,7 +93,7 @@ public class PAPI extends PlaceholderExpansion {
         AtomicReference<LinkedHashMap<String, Integer>> bank = new AtomicReference<>(null);
 
         plugin.getSQL().exists(player, res -> {
-            if(res) plugin.getSQL().getCurrencies(player, bank::set);
+            if(res) plugin.getSQL().getBankInventory(player, bank::set);
         });
 
         if(bank.get() == null) return "0";

@@ -1,6 +1,7 @@
 package io.github.idoomful.assassinscurrencycore.data.SQL;
 
 import io.github.idoomful.assassinscurrencycore.DMain;
+import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 
 import java.io.File;
@@ -83,7 +84,7 @@ public class Lite {
         }
     }
 
-    public void getCurrencies(String player, Callback<LinkedHashMap<String, Integer>> result) {
+    public void getBankInventory(String player, Callback<LinkedHashMap<String, Integer>> result) {
         try(PreparedStatement ps = con.prepareStatement("SELECT `balanceMap` FROM " + TABLE + " WHERE `name`=?")) {
             ps.setString(1, player);
             ResultSet rs = ps.executeQuery();
@@ -108,7 +109,7 @@ public class Lite {
         }
     }
 
-    public void setCurrencies(String player, LinkedHashMap<String, Integer> map) {
+    public void setBankInventory(String player, LinkedHashMap<String, Integer> map) {
         try(PreparedStatement ps = con.prepareStatement("UPDATE " + TABLE + " SET `balanceMap`=? WHERE `name`=?")) {
             ps.setString(1, plugin.getGson().toJson(new MapWrapper(map)));
             ps.setString(2, player);
@@ -118,20 +119,20 @@ public class Lite {
         }
     }
 
-    public void addCurrency(String player, String currency, int amount) {
-        getCurrencies(player, map -> {
+    public void addToBank(String player, String currency, int amount) {
+        getBankInventory(player, map -> {
             LinkedHashMap<String, Integer> output = new LinkedHashMap<>(map);
             Integer old = output.get(currency);
             output.put(currency, old + amount);
-            setCurrencies(player, output);
+            setBankInventory(player, output);
         });
     }
 
-    public void subtractCurrency(String player, String currency, int amount) {
-        getCurrencies(player, map -> {
+    public void subtractFromBank(String player, String currency, int amount) {
+        getBankInventory(player, map -> {
             LinkedHashMap<String, Integer> output = new LinkedHashMap<>(map);
             output.put(currency, Math.max((output.get(currency) - amount), 0));
-            setCurrencies(player, output);
+            setBankInventory(player, output);
         });
     }
 }

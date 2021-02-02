@@ -4,6 +4,7 @@ import io.github.idoomful.assassinscurrencycore.DMain;
 import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
 import io.github.idoomful.assassinscurrencycore.utils.Sounds;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 public enum SettingsYML {
     _OPTIONS("");
@@ -114,6 +116,47 @@ public enum SettingsYML {
 
         public ItemStack getItem(String symbol) {
             return ItemBuilder.build(settings.getString(path + "." + symbol));
+        }
+    }
+
+    public enum WalletOptions {
+        ITEM("item"),
+        ITEM_NAME("item-name"),
+        TITLE("title"),
+        DEFAULT_ROWS("default-rows"),
+        ROW_UPGRADES("row-upgrades");
+
+        public String path;
+        public FileConfiguration settings;
+
+        WalletOptions(String string) {
+            this.path = "wallet-options." + string;
+            this.settings = SettingsYML._OPTIONS.settings;
+        }
+
+        public int getInt() {
+            return settings.getInt(path);
+        }
+        public String getString(Player player) {
+            return Utils.placeholder(player, settings.getString(path));
+        }
+
+        public int getRowsFor(int upgrade) {
+            return settings.getInt(path + "." + upgrade + ".rows");
+        }
+
+        public List<ConfigPair<Integer, String>> getCostsFor(int upgrade) throws Exception {
+            List<ConfigPair<Integer, String>> output = new ArrayList<>();
+
+            for(String line : settings.getStringList(path + "." + upgrade + ".costs")) {
+                try {
+                    output.add(new ConfigPair<>(Integer.parseInt(line.split(" ")[0]), line.split(" ")[1]));
+                } catch(NumberFormatException ne) {
+                    throw new Exception("One of the costs in settings.yml/wallet-options/row-upgrades has the wrong format. Correct format: '<amount> <currency>'");
+                }
+            }
+
+            return output;
         }
     }
 

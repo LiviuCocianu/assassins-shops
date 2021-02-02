@@ -1,9 +1,11 @@
 package io.github.idoomful.assassinscurrencycore.commands;
 
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinscurrencycore.DMain;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
 import io.github.idoomful.assassinscurrencycore.configuration.ShopItem;
+import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.ShopGUI;
@@ -12,6 +14,7 @@ import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,7 +22,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandsClass {
+    private final DMain plugin;
+
     public CommandsClass(DMain plugin) {
+        this.plugin = plugin;
+
         final String pluginName = plugin.getDescription().getName();
         final String pluginNameLower = pluginName.toLowerCase();
 
@@ -42,6 +49,45 @@ public class CommandsClass {
             }
 
             switch(args[0]) {
+                case "item":
+                    if(player.hasPermission(pluginNameLower + ".command.item")) {
+                        if(args.length == 3 || args.length == 4) {
+                            if(Bukkit.getPlayer(args[1]) == null) {
+                                player.sendMessage(MessagesYML.Errors.NOT_ONLINE.withPrefix(arg));
+                                return;
+                            }
+
+                            try {
+                                Player target = Bukkit.getPlayer(args[1]);
+                                String id = args[2];
+                                int amount = args.length == 4 ? Integer.parseInt(args[3]) : 1;
+                                amount = Math.min(amount, 64);
+
+                                if(id.equalsIgnoreCase("wallet")) {
+                                    ItemStack item = ItemBuilder.build(SettingsYML.WalletOptions.ITEM.getString(target));
+                                    item.setAmount(amount);
+
+                                    item = NBTEditor.set(item, SettingsYML.WalletOptions.DEFAULT_ROWS.getInt(), "WalletRows");
+                                    for(String curr : Economy.Currency.getIDs()) {
+                                        item = NBTEditor.set(item, 0, curr);
+                                    }
+
+                                    target.getInventory().addItem(item);
+
+                                    player.sendMessage(MessagesYML.GIVEN_ITEM.withPrefix(arg)
+                                            .replace("$amount$", amount + "")
+                                            .replace("$item$", SettingsYML.WalletOptions.ITEM_NAME.getString(arg))
+                                            .replace("$player$", args[1])
+                                    );
+                                }
+                            } catch(NumberFormatException ne) {
+                                player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(arg));
+                            }
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
+                    break;
                 case "currencies":
                     if(player.hasPermission(pluginNameLower + ".command.currencies")) {
                         List<String> results = Economy.Currency.getIDs();
@@ -210,10 +256,7 @@ public class CommandsClass {
                                 else {
                                     if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
-
-                                        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
-                                        Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
-                                        plugin.getSQL().addEntry(player.getName(), map);
+                                        createEntry(player.getName());
 
                                         new BankGUI(target);
                                         return;
@@ -228,10 +271,7 @@ public class CommandsClass {
                             plugin.getSQL().exists(pl.getName(), result -> {
                                 if(!result) {
                                     player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
-
-                                    LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
-                                    Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
-                                    plugin.getSQL().addEntry(pl.getName(), map);
+                                    createEntry(player.getName());
                                 }
 
                                 new BankGUI(pl);
@@ -259,10 +299,7 @@ public class CommandsClass {
                                 else {
                                     if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
-
-                                        LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
-                                        Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
-                                        plugin.getSQL().addEntry(player.getName(), map);
+                                        createEntry(player.getName());
 
                                         plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
                                         return;
@@ -277,10 +314,7 @@ public class CommandsClass {
                             plugin.getSQL().exists(pl.getName(), result -> {
                                 if(!result) {
                                     player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(pl));
-
-                                    LinkedHashMap<String, Integer> map = new LinkedHashMap<>();
-                                    Economy.Currency.getIDs().forEach(curr -> map.put(curr, 0));
-                                    plugin.getSQL().addEntry(pl.getName(), map);
+                                    createEntry(player.getName());
                                 }
 
                                 plugin.getOpenedBanks().put(pl.getUniqueId(), new BankInventoryGUI(pl));
@@ -311,11 +345,11 @@ public class CommandsClass {
                                     }
 
                                     AtomicReference<LinkedHashMap<String, Integer>> map = new AtomicReference<>();
-                                    plugin.getSQL().getCurrencies(target, map::set);
+                                    plugin.getSQL().getBankInventory(target, map::set);
 
                                     map.get().put(currency, amount);
 
-                                    plugin.getSQL().setCurrencies(target, map.get());
+                                    plugin.getSQL().setBankInventory(target, map.get());
 
                                     player.sendMessage(MessagesYML.CURRENCY_SET.withPrefix(arg)
                                             .replace("$currency$", currency)
@@ -337,5 +371,11 @@ public class CommandsClass {
                     break;
             }
         });
+    }
+
+    private void createEntry(String player) {
+        LinkedHashMap<String, Integer> bank = new LinkedHashMap<>();
+        Economy.Currency.getIDs().forEach(curr -> bank.put(curr, 0));
+        plugin.getSQL().addEntry(player, bank);
     }
 }

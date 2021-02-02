@@ -10,6 +10,7 @@ import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.ShopGUI;
+import io.github.idoomful.assassinscurrencycore.gui.inventories.WalletGUI;
 import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Events;
@@ -20,12 +21,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -38,6 +43,7 @@ public class EventsClass implements Listener {
 
     private final ArrayList<UUID> chatEvent = new ArrayList<>();
     private final HashMap<UUID, ShopItem> targetedItem = new HashMap<>();
+    private final HashMap<UUID, LinkedHashMap<String, Integer>> wallets = new HashMap<>();
 
     public EventsClass(DMain main) {
         this.main = main;
@@ -61,6 +67,55 @@ public class EventsClass implements Listener {
            chatEvent.remove(e.getPlayer().getUniqueId());
            targetedItem.remove(e.getPlayer().getUniqueId());
         });
+    }
+
+    @EventHandler
+    public void onOpen(InventoryOpenEvent e) {
+        Player player = (Player) e.getPlayer();
+        Inventory inv = e.getInventory();
+
+        if(inv.getHolder() instanceof WalletGUI) {
+            LinkedHashMap<String, Integer> wallet = new LinkedHashMap<>();
+            Economy.Currency.getIDs().forEach(curr -> wallet.put(curr, 0));
+            wallets.put(player.getUniqueId(), wallet);
+        }
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent e) {
+        Player player = (Player) e.getPlayer();
+        Inventory inv = e.getInventory();
+        ItemStack wallet = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                ? player.getItemInHand()
+                : player.getInventory().getItemInMainHand();
+
+        if(inv.getHolder() instanceof WalletGUI) {
+            for(String curr : wallets.get(player.getUniqueId()).keySet()) {
+                wallet = NBTEditor.set(wallet, wallets.get(player.getUniqueId()).get(curr), curr);
+            }
+
+            if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
+            else player.getInventory().setItemInMainHand(wallet);
+
+            wallets.remove(player.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        Player player = e.getPlayer();
+        ItemStack inHand = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                ? player.getItemInHand()
+                : player.getInventory().getItemInMainHand();
+
+        if(inHand == null || inHand.getType() == Material.AIR) return;
+
+        if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if(NBTEditor.contains(inHand, "WalletRows")) {
+                e.setCancelled(true);
+                new WalletGUI(player, inHand);
+            }
+        }
     }
 
     // Mark unregistered currency with its appropriate ID
@@ -99,7 +154,6 @@ public class EventsClass implements Listener {
     @EventHandler
     public void onGUIClick(InventoryClickEvent e) {
         if(e.getClickedInventory() == null) return;
-        if(e.getCurrentItem() == null) return;
 
         Player player = (Player) e.getWhoClicked();
         ItemStack clicked = e.getCurrentItem();
@@ -170,12 +224,37 @@ public class EventsClass implements Listener {
                     }
                 }
             }
-        } else if(e.getView().getTopInventory().getHolder() instanceof BankGUI
-                && (e.getView().getBottomInventory().equals(e.getClickedInventory())
-                || e.getView().getTopInventory().equals(e.getClickedInventory()))) {
-            if(e.getCurrentItem().getType() == Material.AIR) return;
+        } else if((e.getView().getTopInventory().getHolder() instanceof BankGUI
+                || e.getView().getTopInventory().getHolder() instanceof WalletGUI)) {
+
+            if(e.getView().getTopInventory().getHolder() instanceof WalletGUI) {
+                Bukkit.broadcastMessage("test 1"); // TODO debug
+                if(e.getView().getTopInventory().equals(e.getClickedInventory())) {
+                    Bukkit.broadcastMessage("test 2"); // TODO debug
+                    if(e.getClick() == ClickType.MIDDLE) return;
+
+                    ItemStack add = e.getCursor();
+
+                    Bukkit.broadcastMessage("test 3"); // TODO debug
+                    if(e.getCurrentItem().getType() == Material.AIR && add.getType() != Material.AIR) {
+                        Bukkit.broadcastMessage("test 4"); // TODO debug
+                        if(NBTEditor.contains(add, "CurrencyId")) {
+                            Bukkit.broadcastMessage("test 5"); // TODO debug
+                            String currency = NBTEditor.getString(add, "CurrencyId");
+                            wallets.get(player.getUniqueId()).put(currency, wallets.get(player.getUniqueId()).get(currency) + add.getAmount());
+                        } else e.setCancelled(true);
+                    } else {
+                        e.setCancelled(true);
+                        return;
+                    }
+                }
+
+                return;
+            }
 
             HashMap<String, Integer> toDeposit = new HashMap<>();
+
+            if(e.getCurrentItem().getType() == Material.AIR) return;
 
             // Check if they clicked on the deposit icon
             if(clicked.isSimilar(SettingsYML.BankOptions.ITEMS.getItem("d"))) {
@@ -212,7 +291,7 @@ public class EventsClass implements Listener {
                     String currency = entry.getKey();
                     int amount = entry.getValue();
 
-                    main.getSQL().addCurrency(player.getName(), currency, amount);
+                    main.getSQL().addToBank(player.getName(), currency, amount);
 
                     currencies.append(MessagesYML.CURRENCY_FORMAT.color(player)
                             .replace("$amount$", amount + "")
@@ -245,25 +324,37 @@ public class EventsClass implements Listener {
             } else if(!NBTEditor.contains(clicked, "CurrencyId")) {
                 e.setCancelled(true);
             }
-        } else if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI) {
-            BankInventoryGUI gui = main.getOpenedBanks().get(player.getUniqueId());
+        } else if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI
+                || e.getClickedInventory().getHolder() instanceof WalletGUI) {
+            boolean isBank = false;
 
-            if(clicked.isSimilar(ItemBuilder.build(SettingsYML.BankInventoryOptions.NEXT_PAGE_ICON.getString(player)
-                    .replace("$page$", gui.getPage() + "")))) {
-                e.setCancelled(true);
-                gui.nextPage();
-                return;
-            }
+            ItemStack wallet = Utils.usesVersionBetween("1.4.x", "1.8.x")
+                    ? player.getItemInHand()
+                    : player.getInventory().getItemInMainHand();
 
-            if(clicked.isSimilar(ItemBuilder.build(SettingsYML.BankInventoryOptions.PREVIOUS_PAGE_ICON.getString(player)
-                    .replace("$page$", gui.getPage() + "")))) {
-                e.setCancelled(true);
-                gui.previousPage();
-                return;
+            if(e.getClickedInventory().getHolder() instanceof BankInventoryGUI) {
+                isBank = true;
+
+                BankInventoryGUI gui = main.getOpenedBanks().get(player.getUniqueId());
+
+                if(clicked.isSimilar(ItemBuilder.build(SettingsYML.BankInventoryOptions.NEXT_PAGE_ICON.getString(player)
+                        .replace("$page$", gui.getPage() + "")))) {
+                    e.setCancelled(true);
+                    gui.nextPage();
+                    return;
+                }
+
+                if(clicked.isSimilar(ItemBuilder.build(SettingsYML.BankInventoryOptions.PREVIOUS_PAGE_ICON.getString(player)
+                        .replace("$page$", gui.getPage() + "")))) {
+                    e.setCancelled(true);
+                    gui.previousPage();
+                    return;
+                }
             }
 
             if(e.getClick() == ClickType.MIDDLE) return;
 
+            // If they have an item in their cursor
             if(e.getCursor().getType() != Material.AIR) {
                 e.setCancelled(true);
                 return;
@@ -271,9 +362,19 @@ public class EventsClass implements Listener {
 
             if(clicked.getType() != Material.AIR && NBTEditor.contains(clicked, "CurrencyId")) {
                 String currency = NBTEditor.getString(clicked, "CurrencyId");
-                main.getSQL().subtractCurrency(player.getName(), currency, clicked.getAmount());
+
+                if(isBank) main.getSQL().subtractFromBank(player.getName(), currency, clicked.getAmount());
+                else {
+                    int subtract = NBTEditor.getInt(wallet, currency) - clicked.getAmount();
+                    subtract = Math.max(subtract, 0);
+                    wallet = NBTEditor.set(wallet, subtract);
+
+                    if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
+                    else player.getInventory().setItemInMainHand(wallet);
+                }
             }
-        } else if(e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI
+        } else if((e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI
+                || e.getView().getTopInventory().getHolder() instanceof WalletGUI)
                 && e.getView().getBottomInventory().equals(e.getClickedInventory())) {
             if(e.isShiftClick()) e.setCancelled(true);
         }

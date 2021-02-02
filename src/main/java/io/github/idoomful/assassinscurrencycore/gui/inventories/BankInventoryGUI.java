@@ -10,13 +10,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BankInventoryGUI extends Paginable implements MyGUI, InventoryHolder {
+public class BankInventoryGUI extends Paginable implements MyGUI {
     private final Inventory inventory;
     private final Player player;
 
@@ -32,7 +31,7 @@ public class BankInventoryGUI extends Paginable implements MyGUI, InventoryHolde
     @Override
     protected List<ItemStack> bodyList() {
         AtomicReference<LinkedHashMap<String, Integer>> map = new AtomicReference<>();
-        DMain.getInstance().getSQL().getCurrencies(player.getName(), map::set);
+        DMain.getInstance().getSQL().getBankInventory(player.getName(), map::set);
 
         List<ItemStack> output = new ArrayList<>();
 
