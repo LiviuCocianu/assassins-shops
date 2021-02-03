@@ -41,6 +41,8 @@ import static org.bukkit.event.EventPriority.MONITOR;
 public class EventsClass implements Listener {
     private final DMain main;
 
+    private final ArrayList<UUID> walletMovementCooldown = new ArrayList<>();
+    private final ArrayList<UUID> walletCooldown = new ArrayList<>();
     private final ArrayList<UUID> chatEvent = new ArrayList<>();
     private final HashMap<UUID, ShopItem> targetedItem = new HashMap<>();
     public static final HashMap<UUID, LinkedHashMap<String, Integer>> wallets = new HashMap<>();
@@ -113,6 +115,11 @@ public class EventsClass implements Listener {
             if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
             else player.getInventory().setItemInMainHand(wallet);
 
+            walletCooldown.add(player.getUniqueId());
+            Bukkit.getScheduler().scheduleSyncDelayedTask(main, () -> {
+                walletCooldown.remove(player.getUniqueId());
+            }, SettingsYML.WalletOptions.COOLDOWN.getInt() * 20);
+
             wallets.remove(player.getUniqueId());
         }
     }
@@ -128,8 +135,14 @@ public class EventsClass implements Listener {
 
         if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if(NBTEditor.contains(inHand, "WalletRows")) {
-                e.setCancelled(true);
-                new WalletGUI(player, inHand);
+                if(!walletCooldown.contains(player.getUniqueId())) {
+                    e.setCancelled(true);
+                    new WalletGUI(player, inHand);
+                } else {
+                    player.sendMessage(MessagesYML.Errors.COOLDOWN.withPrefix(player)
+                            .replace("$cooldown$", SettingsYML.WalletOptions.COOLDOWN.getInt() + "")
+                    );
+                }
             }
         }
     }
@@ -259,14 +272,28 @@ public class EventsClass implements Listener {
                                     String currencyClicked = NBTEditor.getString(clicked, "CurrencyId");
 
                                     if(currencyCursor.equals(currencyClicked)) {
-                                        wallets.get(player.getUniqueId()).put(currencyCursor, amount + add.getAmount());
+                                        if(!walletMovementCooldown.contains(player.getUniqueId())) {
+                                            wallets.get(player.getUniqueId()).put(currencyCursor, amount + add.getAmount());
+
+                                            walletMovementCooldown.add(player.getUniqueId());
+                                            Bukkit.getScheduler().scheduleSyncDelayedTask(main, () -> {
+                                                walletMovementCooldown.remove(player.getUniqueId());
+                                            }, 20);
+                                        } else e.setCancelled(true);
                                     } else e.setCancelled(true);
 
                                     return;
                                 }
                             }
 
-                            wallets.get(player.getUniqueId()).put(currencyCursor, amount + add.getAmount());
+                            if(!walletMovementCooldown.contains(player.getUniqueId())) {
+                                wallets.get(player.getUniqueId()).put(currencyCursor, amount + add.getAmount());
+
+                                walletMovementCooldown.add(player.getUniqueId());
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(main, () -> {
+                                    walletMovementCooldown.remove(player.getUniqueId());
+                                }, 20);
+                            } else e.setCancelled(true);
                             return;
                         } else e.setCancelled(true);
                     } else {
@@ -407,14 +434,24 @@ public class EventsClass implements Listener {
                     int subtract = NBTEditor.getInt(wallet, currency) - clicked.getAmount();
                     subtract = Math.max(subtract, 0);
 
-                    wallets.get(player.getUniqueId()).put(currency, subtract);
+                    if(!walletMovementCooldown.contains(player.getUniqueId())) {
+                        wallets.get(player.getUniqueId()).put(currency, subtract);
+
+                        walletMovementCooldown.add(player.getUniqueId());
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(main, () -> {
+                            walletMovementCooldown.remove(player.getUniqueId());
+                        }, 20);
+                    } else {
+                        e.setCancelled(true);
+                        return;
+                    }
                 }
             }
         }
 
         if((e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI
                 || e.getView().getTopInventory().getHolder() instanceof WalletGUI)
-                && e.getView().getBottomInventory().equals(e.getClickedInventory())) {
+        ) {
             if(e.isShiftClick()) e.setCancelled(true);
         }
     }

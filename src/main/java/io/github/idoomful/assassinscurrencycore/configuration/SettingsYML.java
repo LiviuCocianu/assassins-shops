@@ -124,7 +124,7 @@ public enum SettingsYML {
         ITEM_NAME("item-name"),
         TITLE("title"),
         DEFAULT_ROWS("default-rows"),
-        ROW_UPGRADES("row-upgrades");
+        COOLDOWN("cooldown");
 
         public String path;
         public FileConfiguration settings;
@@ -139,24 +139,6 @@ public enum SettingsYML {
         }
         public String getString(Player player) {
             return Utils.placeholder(player, settings.getString(path));
-        }
-
-        public int getRowsFor(int upgrade) {
-            return settings.getInt(path + "." + upgrade + ".rows");
-        }
-
-        public List<ConfigPair<Integer, String>> getCostsFor(int upgrade) throws Exception {
-            List<ConfigPair<Integer, String>> output = new ArrayList<>();
-
-            for(String line : settings.getStringList(path + "." + upgrade + ".costs")) {
-                try {
-                    output.add(new ConfigPair<>(Integer.parseInt(line.split(" ")[0]), line.split(" ")[1]));
-                } catch(NumberFormatException ne) {
-                    throw new Exception("One of the costs in settings.yml/wallet-options/row-upgrades has the wrong format. Correct format: '<amount> <currency>'");
-                }
-            }
-
-            return output;
         }
     }
 

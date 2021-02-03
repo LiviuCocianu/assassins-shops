@@ -55,6 +55,8 @@ errors:
   no-space: "&cNu ai suficient spatiu in inventar pentru acest item, incearca o cantitate mai mica"
   require-one-slot: "&cElibereaza un slot din inventar in caz ca primesti rest, altfel risti sa nu-l primesti cum trebuie sau chiar deloc!"
   no-stored-currency: "&cNu ai depozitat nimic, pune niste monede in banca si incearca din nou"
+  cooldown: "&cTrebuie sa astepti $cooldown$ secunde pentru a face asta"
+  too-fast: "&cMuti monede in portofel prea rapid, incearca mai incet"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsCurrencyCore  &7&m---------*-"

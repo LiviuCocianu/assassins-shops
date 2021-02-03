@@ -49,19 +49,12 @@ bank-options:
     - "# # # # # # # # #"
 
 wallet-options:
-  item: "id:skull:3 name:&8»_&3Portofel lore:&7Inventarul_tau_e_prea_plin_cu_monede|&7si_crezi_ca_nu_esti_in_siguranta_cu|&7atatia_bani_la_tine?|&7|&7Acest_item_poate_depozita_monedele_tale|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7|&dDe_asemenea,_capacitatea_acestuia|&dpoate_fi_marita_cu_fiecare_nivel! urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
+  item: "id:skull:3 name:&8»_&3Portofel lore:&7Inventarul_tau_e_prea_plin_cu_monede|&7si_crezi_ca_nu_esti_in_siguranta_cu|&7atatia_bani_la_tine?|&7|&7Acest_item_poate_depozita_monedele_tale|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu|&7|&8Cooldown_de_$cooldown$_secunde! urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
   item-name: "Portofel"
   title: " Portofel"
   default-rows: 1
-  row-upgrades:
-    '1':
-      rows: 2
-      costs:
-        - "1 gold"
-    '2':
-      rows: 3
-      costs:
-        - "1 gold"
+  # (in seconds)
+  cooldown: 2
 
 bank-inventory-options:
   title: "Banca » Inventar"

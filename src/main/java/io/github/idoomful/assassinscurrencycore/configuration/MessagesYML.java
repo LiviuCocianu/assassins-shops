@@ -120,7 +120,8 @@ public enum MessagesYML {
         TOOK_TOO_LONG("took-too-long"),
         NO_SPACE("no-space"),
         REQUIRE_ONE_SLOT("require-one-slot"),
-        NO_STORED_CURRENCY("no-stored-currency");
+        NO_STORED_CURRENCY("no-stored-currency"),
+        COOLDOWN("cooldown");
 
         String output;
         FileConfiguration messages;

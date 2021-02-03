@@ -65,7 +65,12 @@ public class CommandsClass {
                                 amount = Math.min(amount, 64);
 
                                 if(id.equalsIgnoreCase("wallet")) {
-                                    ItemStack item = ItemBuilder.build(SettingsYML.WalletOptions.ITEM.getString(target));
+                                    int cooldown = SettingsYML.WalletOptions.COOLDOWN.getInt();
+
+                                    ItemStack item = ItemBuilder.build(SettingsYML.WalletOptions.ITEM.getString(target)
+                                            .replace("$cooldown$", cooldown + "")
+                                    );
+
                                     item.setAmount(amount);
 
                                     item = NBTEditor.set(item, SettingsYML.WalletOptions.DEFAULT_ROWS.getInt(), "WalletRows");
