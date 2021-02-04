@@ -7,10 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-public class BankGUI implements MyGUI {
+public class DepositGUI implements MyGUI {
     private final Inventory inventory;
 
-    public BankGUI(Player player) {
+    public DepositGUI(Player player) {
         inventory = Bukkit.createInventory(this, SettingsYML.BankOptions.ROWS.getInt() * 9, SettingsYML.BankOptions.TITLE.getString(player));
 
         InventoryBuilder builder = new InventoryBuilder(inventory);

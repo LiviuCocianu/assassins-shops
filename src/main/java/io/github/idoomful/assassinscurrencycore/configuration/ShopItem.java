@@ -13,12 +13,14 @@ public class ShopItem {
     private List<ConfigPair<Integer, String>> prices = new ArrayList<>();
     private boolean giveItself;
     private List<String> commands = new ArrayList<>();
+    private boolean stackable = true;
 
     public ShopItem(String category, String itemID) {
-        FileConfiguration sett = DMain.getInstance().getConfigs().getFile("settings");
-        icon = ItemBuilder.build(sett.getString("shops." + category + ".items." + itemID + ".icon"));
+        FileConfiguration shops = DMain.getInstance().getConfigs().getFile("shops");
 
-        for(String pricePair : sett.getStringList("shops." + category + ".items." + itemID + ".prices")) {
+        icon = ItemBuilder.build(shops.getString("shops." + category + ".items." + itemID + ".icon"));
+
+        for(String pricePair : shops.getStringList("shops." + category + ".items." + itemID + ".prices")) {
             int amount;
             String currency = pricePair.split(" ")[1];
 
@@ -31,9 +33,11 @@ public class ShopItem {
             prices.add(new ConfigPair<>(amount, currency));
         }
 
-        giveItself = sett.getBoolean("shops." + category + ".items." + itemID + ".give-itself", true);
+        giveItself = shops.getBoolean("shops." + category + ".items." + itemID + ".give-itself", true);
 
-        commands.addAll(sett.getStringList("shops." + category + ".items." + itemID + ".commands"));
+        commands.addAll(shops.getStringList("shops." + category + ".items." + itemID + ".commands"));
+
+        stackable = shops.getBoolean("shops." + category + ".items." + itemID + ".stackable", true);
     }
 
     public ItemStack getIcon() {
@@ -46,6 +50,10 @@ public class ShopItem {
 
     public boolean isGivingItself() {
         return giveItself;
+    }
+
+    public boolean isStackable() {
+        return stackable;
     }
 
     public List<String> getCommands() {

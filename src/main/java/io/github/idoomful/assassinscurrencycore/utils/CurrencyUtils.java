@@ -6,6 +6,7 @@ import io.github.idoomful.assassinscurrencycore.configuration.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -150,7 +151,7 @@ public class CurrencyUtils {
             filter = Economy.Currency.getMarkedItem(map.get(currency).getValue(), 1);
         }
 
-        space = getItemSpace(player, filter);
+        space = getItemSpace(player.getInventory(), filter);
 
         int index = 0;
         int amountAcumulated = 0;
@@ -222,7 +223,7 @@ public class CurrencyUtils {
         }
     }
 
-    public static HashMap<String, Integer> withdrawCosts(Player player, List<ConfigPair<Integer, String>> costs) {
+    public static HashMap<String, Integer> withdrawCosts(Player player, List<ConfigPair<Integer, String>> costs, boolean message) {
         HashMap<String, Integer> withdrawnBackup = new HashMap<>();
 
         for(ConfigPair<Integer, String> pair : costs) {
@@ -235,7 +236,7 @@ public class CurrencyUtils {
                     player.getInventory().addItem(Economy.Currency.getMarkedItem(curr, amount));
                 });
 
-                player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
+                if(message) player.sendMessage(MessagesYML.Errors.TRANSACTION_ERROR.withPrefix(player));
                 return new HashMap<>();
             }
         }
@@ -247,7 +248,7 @@ public class CurrencyUtils {
         HashMap<String, Integer> withdrawnBackup = new HashMap<>();
 
         for(int i = 0; i < mult; i++) {
-            HashMap<String, Integer> withdrawn = CurrencyUtils.withdrawCosts(player, costs);
+            HashMap<String, Integer> withdrawn = CurrencyUtils.withdrawCosts(player, costs, false);
 
             if(withdrawn.isEmpty()) {
                 for(Map.Entry<String, Integer> pair : withdrawnBackup.entrySet()) {
@@ -290,10 +291,10 @@ public class CurrencyUtils {
         return true;
     }
 
-    public static int getItemSpace(Player player, ItemStack item) {
+    public static int getItemSpace(Inventory inventory, ItemStack item) {
         int count = 0;
 
-        for(ItemStack is : player.getInventory().getContents()) {
+        for(ItemStack is : inventory) {
             if(is == null) count += 64;
             else if(is.isSimilar(item)) count += 64 - is.getAmount();
         }

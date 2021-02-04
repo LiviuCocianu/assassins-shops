@@ -20,6 +20,7 @@ public class ConfigManager<T extends JavaPlugin> {
 
         addConfigurationFile("messages");
         addConfigurationFile("settings");
+        addConfigurationFile("shops");
     }
 
     public ConfigManager<T> addConfigurationFile(String name) {

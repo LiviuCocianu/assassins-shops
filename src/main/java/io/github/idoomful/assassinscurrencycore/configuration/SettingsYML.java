@@ -13,21 +13,23 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.DataFormatException;
 
 public enum SettingsYML {
     _OPTIONS("");
 
     String path;
     FileConfiguration settings;
+    FileConfiguration shops;
 
     SettingsYML(String output) {
         settings = DMain.getInstance().getConfigs().getFile("settings");
+        shops = DMain.getInstance().getConfigs().getFile("shops");
         this.path = output;
     }
 
     public void reload() {
         settings = DMain.getInstance().getConfigs().getFile("settings");
+        shops = DMain.getInstance().getConfigs().getFile("shops");
     }
     public int getInt() {
         return settings.getInt(path);
@@ -123,7 +125,7 @@ public enum SettingsYML {
         ITEM("item"),
         ITEM_NAME("item-name"),
         TITLE("title"),
-        DEFAULT_ROWS("default-rows"),
+        ROWS("rows"),
         COOLDOWN("cooldown");
 
         public String path;
@@ -225,7 +227,8 @@ public enum SettingsYML {
         SUCCESSFUL_ACTION("successful-action"),
         PAGE_TURN("page-turn"),
         REQUIRE_INPUT("require-input"),
-        CANCEL_INPUT("cancel-input");
+        CANCEL_INPUT("cancel-input"),
+        WALLET_OPEN("wallet-open");
 
         public String path;
         public FileConfiguration settings;
@@ -260,7 +263,7 @@ public enum SettingsYML {
 
         Shops() {
             this.path = "shops";
-            this.settings = SettingsYML._OPTIONS.settings;
+            this.settings = SettingsYML._OPTIONS.shops;
         }
 
         public List<String> getCategoryIDs() {

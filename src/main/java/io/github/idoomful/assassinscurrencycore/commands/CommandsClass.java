@@ -6,7 +6,7 @@ import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
 import io.github.idoomful.assassinscurrencycore.configuration.ShopItem;
 import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
-import io.github.idoomful.assassinscurrencycore.gui.inventories.BankGUI;
+import io.github.idoomful.assassinscurrencycore.gui.inventories.DepositGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.ShopGUI;
 import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
@@ -73,7 +73,7 @@ public class CommandsClass {
 
                                     item.setAmount(amount);
 
-                                    item = NBTEditor.set(item, SettingsYML.WalletOptions.DEFAULT_ROWS.getInt(), "WalletRows");
+                                    item = NBTEditor.set(item, SettingsYML.WalletOptions.ROWS.getInt(), "WalletRows");
                                     item = NBTEditor.set(item, UUID.randomUUID().toString(), "WalletId");
 
                                     for(String curr : Economy.Currency.getIDs()) {
@@ -260,13 +260,13 @@ public class CommandsClass {
 
                                 Player target = Bukkit.getPlayer(args[1]);
 
-                                if(result) new BankGUI(target);
+                                if(result) new DepositGUI(target);
                                 else {
                                     if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
                                         player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
                                         createEntry(player.getName());
 
-                                        new BankGUI(target);
+                                        new DepositGUI(target);
                                         return;
                                     }
 
@@ -282,7 +282,7 @@ public class CommandsClass {
                                     createEntry(player.getName());
                                 }
 
-                                new BankGUI(pl);
+                                new DepositGUI(pl);
                             });
                         }
                     } else {

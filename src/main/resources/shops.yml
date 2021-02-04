@@ -1,0 +1,343 @@
+shops:
+  combat:
+    title: "Shop » Combat"
+    items:
+      'goldensword':
+        icon: "id:golden_sword"
+
+        # Place the currencies you want to charge the player with
+        # Format: <amount> <currency_id>
+        prices:
+          - "16 bronze"
+
+        # Give the icon item to the player
+        give-itself: true
+
+        # Functions:
+        # [message] - Send a message to the buyer instead of running a command
+
+        # Placeholders:
+        # $prefix$ - The prefix used by the plugin for messages
+        # $quantity$ - The quantity of items bought
+        # $player$ - The player who bought the item
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de aur&a!"
+      'woodsword':
+        icon: "id:wooden_sword"
+
+        # Place the currencies you want to charge the player with
+        # Format: <amount> <currency_id>
+        prices:
+          - "32 bronze"
+
+        # Give the icon item to the player
+        give-itself: true
+
+        # Functions:
+        # [message] - Send a message to the buyer instead of running a command
+
+        # Placeholders:
+        # $prefix$ - The prefix used by the plugin for messages
+        # $quantity$ - The quantity of items bought
+        # $player$ - The player who bought the item
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de lemn&a!"
+      'stonesword':
+        icon: "id:stone_sword"
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de piatra&a!"
+      'ironsword':
+        icon: "id:iron_sword"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de fier&a!"
+      'diamondsword':
+        icon: "id:diamond_sword"
+        prices:
+          - "2 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de diamant&a!"
+      'bow':
+        icon: "id:bow"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Arc&a!"
+      'arrow':
+        icon: "id:arrow"
+        prices:
+          - "5 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sageata&a!"
+      'lhelmet':
+        icon: "id:leather_helmet"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Casca de piele&a!"
+      'lchest':
+        icon: "id:leather_chestplate"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta de piele&a!"
+      'lleggings':
+        icon: "id:leather_leggings"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni de piele&a!"
+      'lboots':
+        icon: "id:leather_boots"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cisme de piele&a!"
+      'chelmet':
+        icon: "id:chainmail_helmet"
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Casca din lant&a!"
+      'cchest':
+        icon: "id:chainmail_chestplate"
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta din lant&a!"
+      'cleggings':
+        icon: "id:chainmail_leggings"
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni din lant&a!"
+      'cboots':
+        icon: "id:chainmail_boots"
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cisme din lant&a!"
+      'ihelmet':
+        icon: "id:iron_helmet"
+        prices:
+          - "2 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Casca de fier&a!"
+      'ichest':
+        icon: "id:iron_chestplate"
+        prices:
+          - "2 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta de fier&a!"
+      'ileggings':
+        icon: "id:iron_leggings"
+        prices:
+          - "2 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni de fier&a!"
+      'iboots':
+        icon: "id:iron_boots"
+        prices:
+          - "2 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cisme de fier&a!"
+      'dhelmet':
+        icon: "id:diamond_helmet"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Casca de diamant&a!"
+      'dchest':
+        icon: "id:diamond_chestplate"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta de diamant&a!"
+      'dleggings':
+        icon: "id:diamond_leggings"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni de diamant&a!"
+      'dboots':
+        icon: "id:diamond_boots"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cisme de diamant&a!"
+      'blowpipe':
+        icon: "id:blaze_rod unbreaking:1 hideFlags name:&l&dBlowpipe lore:&7Un_blowpipe_este_o_arma_pentru_distante|&7medii,_a_carui_amunitie_sunt_sageti_otravitoare!|&7Click_dreapta_pentru_a_lansa_una.|&7|&dEfecte:_Wither_II,_Slowness_I|&7|&8Cooldown_de_2_secunde!|&7|&9Utilizari:&b_20"
+        prices:
+          - "1 gold"
+        give-itself: false
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Blowpipe&a!"
+          - "ag $player$ 5 20"
+  consumables:
+    title: "Shop » Consumabile"
+    items:
+      'milk':
+        icon: "id:milk_bucket"
+        prices:
+          - "16 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Lapte&a!"
+      'apple':
+        icon: "id:apple"
+        prices:
+          - "15 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar&a!"
+      'bread':
+        icon: "id:bread"
+        prices:
+          - "20 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Paine&a!"
+      'steak':
+        icon: "id:cooked_beef"
+        prices:
+          - "25 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carne&a!"
+      'gcarrot':
+        icon: "id:golden_carrot lore:&8Nivel_de_saturatie_mare"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Morcov de aur&a!"
+      'smoke':
+        icon: "id:banner pattern:base,silver pattern:skull,black hideFlags unbreaking:1 name:&f&lFumigena lore:&8Arunca_acest_item_pe_jos_si_fugi!|&7Odata_activata,_un_fum_va_acoperi_zona_din|&7jur_(5x5),_orbind_pe_oricine_sta_in_el.|&7|&cDe_unica_folosinta|&7|&8Cooldown_de_10_secunde!"
+        prices:
+          - "2 silver"
+        give-itself: false
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Fumigena&a!"
+          - "ag $player$ 3 $quantity$"
+      'dynamite':
+        icon: "id:tnt hideFlags name:&lDinamita lore:&8Arunca_acest_item_pe_jos_si_fugi!|&7Similar_cu_TNT-ul,_dinamita_provoaca_daune|&7jucatorilor,_dar_nu_si_constructiilor._In_functie|&7de_proximitate,_poti_pierde_3-5_inimi.|&7|&cDe_unica_folosinta|&7|&8Cooldown_de_5_secunde!"
+        prices:
+          - "5 silver"
+        give-itself: false
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Dinamita&a!"
+          - "ag $player$ 4 $quantity$"
+      'gapple1':
+        icon: "id:golden_apple"
+        prices:
+          - "2 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar de aur normal&a!"
+      'gapple2':
+        icon: "id:golden_apple:1"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar de aur OP&a!"
+      'pearl':
+        icon: "id:ender_pearl"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Perla&a!"
+      'xpbottle':
+        icon: "id:experience_bottle"
+        prices:
+          - "32 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Flacon cu experienta&a!"
+      'regen':
+        icon: "id:potion:8225"
+        prices:
+          - "3 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Regeneration'&a!"
+      'heal':
+        icon: "id:potion:8229"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Instant Health'&a!"
+      'harm':
+        icon: "id:potion:16428"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune Splash 'Instant Damage'&a!"
+      'strength':
+        icon: "id:potion:8233"
+        prices:
+          - "5 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Strength'&a!"
+  utilities:
+    title: "Shop » Utilitati"
+    items:
+      'lockpick':
+        icon: "id:stick name:&eSperaclu lore:&7Unealta_folosita_pentru_a_descuia_un|&7cufar_blocat.|&7|&c[!]_Acest_item_poate_fi_&npierdut&c_daca|&cnu_deschizi_corect_cufarul!"
+        prices:
+          - "5 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Speraclu&a!"
+      'icepick':
+        icon: "id:iron_hoe unbreakable hideFlags name:&f&lPiolet lore:&8Instrument_folosit_pentru_escaladari|&7Stai_aproape_de_un_perete_si_apasa|&7click_dreapta_repetat_pentru_a_escalada."
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Piolet&a!"
+      'hook':
+        icon: "id:fishing_rod unbreakable hideFlags name:&f&lCarlig_tactic lore:&7Foloseste_carligul_in_directia_dorita|&7si_trage_pentru_a_te_lansa!|&7|&8Cooldown_de_2_secunde!|&7|&9Utilizari:&b_100"
+        prices:
+          - "3 gold"
+        give-itself: false
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carlig tactic&a!"
+          - "ag $player$ 1 100"
+      'wallet':
+        icon: "id:skull:3 name:&8»_&3Portofel lore:&7Inventarul_tau_e_prea_plin_cu_monede|&7si_crezi_ca_nu_esti_in_siguranta_cu|&7atatia_bani_la_tine?|&7|&7Acest_item_poate_depozita_monedele_tale|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
+        prices:
+          - "5 gold"
+        give-itself: false
+        stackable: false
+        commands:
+          - "ascurr item $player$ wallet $quantity$"
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Portofel&a!"
