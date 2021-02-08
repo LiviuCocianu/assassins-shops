@@ -5,10 +5,12 @@ import io.github.idoomful.assassinscurrencycore.DMain;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
 import io.github.idoomful.assassinscurrencycore.configuration.ShopItem;
+import io.github.idoomful.assassinscurrencycore.data.SQL.TransactionLog;
 import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.DepositGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.ShopGUI;
+import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
@@ -81,6 +83,8 @@ public class CommandsClass {
                                     }
 
                                     target.getInventory().addItem(item);
+
+                                    Utils.updateWalletLore(target.getInventory());
 
                                     player.sendMessage(MessagesYML.GIVEN_ITEM.withPrefix(arg)
                                             .replace("$amount$", amount + "")
@@ -208,6 +212,17 @@ public class CommandsClass {
                             if (Economy.Currency.hasID(args[2])) {
                                 try {
                                     int amount = args.length == 4 ? Integer.parseInt(args[3]) : 1;
+
+                                    List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                                    currs.add(new ConfigPair<>(amount, args[2]));
+
+                                    CurrencyUtils.logTransaction(new TransactionLog(
+                                            args[1],
+                                            arg != null ? arg.getName() : "CONSOLE",
+                                            "given by currency core",
+                                            currs
+                                    ).currenciesAdded(true));
+
                                     target.getInventory().addItem(
                                             Economy.Currency.getMarkedItem(args[2], amount)
                                     );
@@ -234,11 +249,25 @@ public class CommandsClass {
 
                             Player target = Bukkit.getPlayer(args[1]);
 
+                            List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                            currs.add(new ConfigPair<>(0, "unknown"));
+
+                            String comment = "";
+
                             if (args[2].equalsIgnoreCase("up")) {
+                                comment = "converted up";
                                 CurrencyUtils.convert(target, CurrencyUtils.ConvertWay.UP);
                             } else if (args[2].equalsIgnoreCase("down")) {
+                                comment = "converted down";
                                 CurrencyUtils.convert(target, CurrencyUtils.ConvertWay.DOWN);
                             }
+
+                            CurrencyUtils.logTransaction(new TransactionLog(
+                                    target.getName(),
+                                    arg != null ? arg.getName() : "CONSOLE",
+                                    comment,
+                                    currs
+                            ).convert(true));
                         } else {
                             player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
                         }
@@ -356,6 +385,16 @@ public class CommandsClass {
                                     plugin.getSQL().getBankInventory(target, map::set);
 
                                     map.get().put(currency, amount);
+
+                                    List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                                    currs.add(new ConfigPair<>(amount, currency));
+
+                                    CurrencyUtils.logTransaction(new TransactionLog(
+                                            target,
+                                            arg != null ? arg.getName() : "CONSOLE",
+                                            "",
+                                            currs
+                                    ).currencySet(true));
 
                                     plugin.getSQL().setBankInventory(target, map.get());
 

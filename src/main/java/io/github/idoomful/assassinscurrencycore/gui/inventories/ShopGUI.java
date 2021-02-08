@@ -1,7 +1,7 @@
 package io.github.idoomful.assassinscurrencycore.gui.inventories;
 
 import io.github.idoomful.assassinscurrencycore.DMain;
-import io.github.idoomful.assassinscurrencycore.configuration.ConfigPair;
+import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
 import io.github.idoomful.assassinscurrencycore.gui.MyGUI;

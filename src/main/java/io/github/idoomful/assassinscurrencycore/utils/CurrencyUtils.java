@@ -2,13 +2,15 @@ package io.github.idoomful.assassinscurrencycore.utils;
 
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinscurrencycore.DMain;
-import io.github.idoomful.assassinscurrencycore.configuration.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
+import io.github.idoomful.assassinscurrencycore.data.SQL.TransactionLog;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -339,5 +341,48 @@ public class CurrencyUtils {
         String above = Economy.Worth.getIDs().get(currIndex);
 
         return total >= Objects.requireNonNull(Economy.Worth.getWorth(above)).getKey();
+    }
+
+    public static void createLogsFile() {
+        String logsFileName = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        File logsFile = new File(
+                DMain.getInstance().getDataFolder() + File.separator + "logs",
+                logsFileName + ".txt"
+        );
+
+        if(!logsFile.exists()) {
+            try {
+                boolean result = logsFile.createNewFile();
+
+                if(result) DMain.getInstance().getLogger().info("Created transaction log file for " + logsFileName);
+                else DMain.getInstance().getLogger().warning("Couldn't create transaction log file for " + logsFileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void logTransaction(TransactionLog log) {
+        String logsFileName = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        File logsFile = new File(
+                DMain.getInstance().getDataFolder() + File.separator + "logs",
+                logsFileName + ".txt"
+        );
+
+        createLogsFile();
+
+        if(logsFile.exists()) {
+            try {
+                BufferedWriter bw = new BufferedWriter(new FileWriter(logsFile, true));
+
+                String prefix = new SimpleDateFormat("[HH:mm:ss]: ").format(new Date());
+
+                bw.write(prefix + log.logMessage());
+                bw.newLine();
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

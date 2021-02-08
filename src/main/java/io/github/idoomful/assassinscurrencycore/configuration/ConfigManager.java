@@ -1,5 +1,6 @@
 package io.github.idoomful.assassinscurrencycore.configuration;
 
+import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

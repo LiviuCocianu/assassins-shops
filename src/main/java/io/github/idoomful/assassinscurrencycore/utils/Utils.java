@@ -1,14 +1,19 @@
 package io.github.idoomful.assassinscurrencycore.utils;
 
+import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinscurrencycore.DMain;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
+import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
+import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -108,6 +113,42 @@ public class Utils {
         File file = new File(DMain.getInstance().getDataFolder().getPath()
                 .replace(DMain.getInstance().getDescription().getName(), plugin + "/" + configName + ".yml"));
         return YamlConfiguration.loadConfiguration(file);
+    }
+
+    public static void updateWalletLore(Inventory inv) {
+        for(int i = 0; i < inv.getContents().length; i++) {
+            ItemStack item = inv.getContents()[i];
+            if(item == null) continue;
+
+            if(NBTEditor.contains(item, "WalletRows")) {
+                if(!item.hasItemMeta()) continue;
+                if(!item.getItemMeta().hasLore()) continue;
+
+                ItemMeta im = item.getItemMeta();
+
+                ItemStack model = ItemBuilder.build(SettingsYML.WalletOptions.ITEM.getString(null));
+                im.setLore(model.getItemMeta().getLore());
+
+                List<String> lore = im.getLore();
+
+                for(String id : Economy.Currency.getIDs()) {
+                    for(String line : im.getLore()) {
+                        String decolored = ChatColor.stripColor(line);
+                        String newID = "$" + id.replace("_", "") + "$";
+
+                        if(decolored.contains(newID)) {
+                            String currAmount = NBTEditor.getInt(item, id) + "";
+                            lore.set(lore.indexOf(line), line.replace(newID, currAmount));
+                        }
+                    }
+                }
+
+                im.setLore(lore);
+                item.setItemMeta(im);
+
+                inv.setItem(i, item);
+            }
+        }
     }
 
     public static void sendActionText(Player player, String message){

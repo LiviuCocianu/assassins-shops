@@ -2,6 +2,7 @@ package io.github.idoomful.assassinscurrencycore.configuration;
 
 import io.github.idoomful.assassinscurrencycore.DMain;
 import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
+import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -9,13 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShopItem {
+    private final String category;
     private ItemStack icon;
     private List<ConfigPair<Integer, String>> prices = new ArrayList<>();
     private boolean giveItself;
     private List<String> commands = new ArrayList<>();
-    private boolean stackable = true;
+    private final boolean stackable;
 
     public ShopItem(String category, String itemID) {
+        this.category = category;
+
         FileConfiguration shops = DMain.getInstance().getConfigs().getFile("shops");
 
         icon = ItemBuilder.build(shops.getString("shops." + category + ".items." + itemID + ".icon"));
@@ -38,6 +42,10 @@ public class ShopItem {
         commands.addAll(shops.getStringList("shops." + category + ".items." + itemID + ".commands"));
 
         stackable = shops.getBoolean("shops." + category + ".items." + itemID + ".stackable", true);
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public ItemStack getIcon() {

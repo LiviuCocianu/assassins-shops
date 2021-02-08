@@ -12,6 +12,7 @@ import io.github.idoomful.assassinscurrencycore.events.EventsClass;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.BankInventoryGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.ShopGUI;
 import io.github.idoomful.assassinscurrencycore.gui.inventories.WalletGUI;
+import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
 import org.bukkit.Bukkit;
@@ -19,10 +20,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DMain extends JavaPlugin {
     private final String version = getDescription().getVersion();
@@ -63,6 +65,15 @@ public class DMain extends JavaPlugin {
         } else {
             Bukkit.getLogger().info(getDescription().getName() + " couldn't hook into PlaceholderAPI, proceeding anyway..");
         }
+
+        File logsFolder = new File(getDataFolder(), "logs");
+
+        if(!logsFolder.exists()) {
+            if(logsFolder.mkdirs()) getLogger().info("Created logs folder");
+            else getLogger().warning("Couldn't create logs folder..");
+        }
+
+        CurrencyUtils.createLogsFile();
     }
 
     @Override

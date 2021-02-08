@@ -49,7 +49,7 @@ bank-options:
     - "# # # # # # # # #"
 
 wallet-options:
-  item: "id:skull:3 name:&8»_&3Portofel lore:&7Inventarul_tau_e_prea_plin_cu_monede|&7si_crezi_ca_nu_esti_in_siguranta_cu|&7atatia_bani_la_tine?|&7|&7Acest_item_poate_depozita_monedele_tale|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu|&7|&8Cooldown_de_$cooldown$_secunde! urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
+  item: "id:skull:3 name:&8»_&3Portofel lore:&7Inventarul_tau_e_prea_plin_cu_monede|&7si_crezi_ca_nu_esti_in_siguranta_cu|&7atatia_bani_la_tine?|&7|&7Acest_item_poate_depozita_monedele_tale|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu|&7|&f&nInventar|&8»_&6$bronze$_bronz|&8»_&7$silver$_argint|&8»_&e$gold$_aur|&8»_&e&l$goldbag$_sac_cu_aur|&8»_&b$crystal$_cristal urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
   item-name: "Portofel"
   title: " Portofel"
   rows: 1

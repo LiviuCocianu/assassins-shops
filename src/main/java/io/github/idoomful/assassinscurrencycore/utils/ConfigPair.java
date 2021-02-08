@@ -1,4 +1,4 @@
-package io.github.idoomful.assassinscurrencycore.configuration;
+package io.github.idoomful.assassinscurrencycore.utils;
 
 import java.util.Map;
 

@@ -2,7 +2,8 @@ package io.github.idoomful.assassinscurrencycore.events;
 
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinscurrencycore.DMain;
-import io.github.idoomful.assassinscurrencycore.configuration.ConfigPair;
+import io.github.idoomful.assassinscurrencycore.data.SQL.TransactionLog;
+import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import io.github.idoomful.assassinscurrencycore.configuration.SettingsYML;
 import io.github.idoomful.assassinscurrencycore.configuration.ShopItem;
@@ -115,6 +116,8 @@ public class EventsClass implements Listener {
             if(Utils.usesVersionBetween("1.4.x", "1.8.x")) player.setItemInHand(wallet);
             else player.getInventory().setItemInMainHand(wallet);
 
+            Utils.updateWalletLore(player.getInventory());
+
             walletCooldown.add(player.getUniqueId());
             Bukkit.getScheduler().scheduleSyncDelayedTask(main, () -> {
                 walletCooldown.remove(player.getUniqueId());
@@ -161,6 +164,16 @@ public class EventsClass implements Listener {
             for(String id : Economy.Currency.getIDs()) {
                 if(item.isSimilar(Economy.Currency.getItem(id, item.getAmount()))) {
                     if(!NBTEditor.contains(item, "CurrencyId")) {
+                        List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                        currs.add(new ConfigPair<>(item.getAmount(), id));
+
+                        CurrencyUtils.logTransaction(new TransactionLog(
+                                e.getWhoClicked().getName(),
+                                e.getWhoClicked().getName(),
+                                "found in cursor",
+                                currs
+                        ).pseudoCurrency(true));
+
                         e.setCursor(NBTEditor.set(item, id, "CurrencyId"));
                         return;
                     }
@@ -175,8 +188,19 @@ public class EventsClass implements Listener {
 
             for(String id : Economy.Currency.getIDs()) {
                 if(item.isSimilar(Economy.Currency.getItem(id, item.getAmount()))) {
-                    if(!NBTEditor.contains(item, "CurrencyId"))
-                    e.getInventory().setItem(i, NBTEditor.set(item, id, "CurrencyId"));
+                    if(!NBTEditor.contains(item, "CurrencyId")) {
+                        List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                        currs.add(new ConfigPair<>(item.getAmount(), id));
+
+                        CurrencyUtils.logTransaction(new TransactionLog(
+                                e.getWhoClicked().getName(),
+                                e.getWhoClicked().getName(),
+                                "found somewhere in inventory",
+                                currs
+                        ).pseudoCurrency(true));
+
+                        e.getInventory().setItem(i, NBTEditor.set(item, id, "CurrencyId"));
+                    }
                 }
             }
         }
@@ -295,6 +319,17 @@ public class EventsClass implements Listener {
 
             if(clicked.getType() != Material.AIR && NBTEditor.contains(clicked, "CurrencyId")) {
                 String currency = NBTEditor.getString(clicked, "CurrencyId");
+
+                List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                currs.add(new ConfigPair<>(clicked.getAmount(), currency));
+
+                CurrencyUtils.logTransaction(new TransactionLog(
+                        player.getName(),
+                        player.getName(),
+                        "",
+                        currs
+                ).bankWithdraw(true));
+
                 main.getSQL().subtractFromBank(player.getName(), currency, clicked.getAmount());
             }
         }
@@ -384,6 +419,18 @@ public class EventsClass implements Listener {
                     if(index != toDeposit.size()) currencies.append(MessagesYML.CURRENCY_SEPARATOR.color(player));
                 }
 
+                if(!toDeposit.isEmpty()) {
+                    List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                    toDeposit.forEach((curr, amount) -> currs.add(new ConfigPair<>(amount, curr)));
+
+                    CurrencyUtils.logTransaction(new TransactionLog(
+                            player.getName(),
+                            player.getName(),
+                            "",
+                            currs
+                    ).bankDeposit(true));
+                }
+
                 /*
 
                 When a player closes the bank with money inside, without sending the money
@@ -423,7 +470,7 @@ public class EventsClass implements Listener {
                 || (e.getView().getTopInventory().getHolder() instanceof WalletGUI
                 && e.getClickedInventory().equals(e.getView().getBottomInventory()))
         ) {
-            if(e.getClick() == ClickType.MIDDLE) {
+            if(e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.RIGHT) {
                 e.setCancelled(true);
                 return;
             }
@@ -448,6 +495,16 @@ public class EventsClass implements Listener {
                     int subtract = Math.max(wallets.get(player.getUniqueId()).get(clickedCurr) - clicked.getAmount(), 0);
 
                     if (!walletMovementCooldown.contains(player.getUniqueId())) {
+                        List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                        currs.add(new ConfigPair<>(clicked.getAmount(), clickedCurr));
+
+                        CurrencyUtils.logTransaction(new TransactionLog(
+                                player.getName(),
+                                player.getName(),
+                                "",
+                                currs
+                        ).walletOut(true));
+
                         wallets.get(player.getUniqueId()).put(clickedCurr, subtract);
 
                         walletMovementCooldown.add(player.getUniqueId());
@@ -480,6 +537,16 @@ public class EventsClass implements Listener {
                 }
 
                 if (!walletMovementCooldown.contains(player.getUniqueId())) {
+                    List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                    currs.add(new ConfigPair<>(addend, targetedCurr));
+
+                    CurrencyUtils.logTransaction(new TransactionLog(
+                            player.getName(),
+                            player.getName(),
+                            "",
+                            currs
+                    ).walletIn(true));
+
                     wallets.get(player.getUniqueId()).put(targetedCurr, amount + addend);
 
                     walletMovementCooldown.add(player.getUniqueId());
@@ -550,6 +617,18 @@ public class EventsClass implements Listener {
                     chatEvent.remove(player.getUniqueId());
                     targetedItem.remove(player.getUniqueId());
                     return;
+                } else {
+                    List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                    shopItem.getPrices().forEach(pair -> {
+                        currs.add(new ConfigPair<>(pair.getKey() * amount, pair.getValue()));
+                    });
+
+                    CurrencyUtils.logTransaction(new TransactionLog(
+                            player.getName(),
+                            "",
+                            "transaction in shop '" + shopItem.getCategory() + "'",
+                            currs
+                    ).currenciesWithdraw(true));
                 }
 
                 if(shopItem.isGivingItself()) {

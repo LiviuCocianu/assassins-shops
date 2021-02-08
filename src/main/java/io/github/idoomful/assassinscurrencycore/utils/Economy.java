@@ -2,7 +2,6 @@ package io.github.idoomful.assassinscurrencycore.utils;
 
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 import io.github.idoomful.assassinscurrencycore.DMain;
-import io.github.idoomful.assassinscurrencycore.configuration.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.configuration.MessagesYML;
 import io.github.idoomful.assassinscurrencycore.gui.ItemBuilder;
 import org.bukkit.Material;
