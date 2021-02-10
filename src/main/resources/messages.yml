@@ -13,6 +13,7 @@ messages:
   currency-saved: "Ai adaugat urmatoarele monede in banca: $currencies$"
   repaired: "Ai reparat acest item cu succes"
   currency-set: "Ai setat &e$currency$&f in banca lui &n$player$&r la &e$amount$"
+  currency-taken: "Ai luat &ex$amount$ $currency$&f din inventarul lui &n$player$"
   given-item: "Ai dat x&e$amount$ $item$&f lui &n$player$"
 currencies:
   bronze: "&6Moneda de bronz"

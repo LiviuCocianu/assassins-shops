@@ -416,6 +416,85 @@ public class CommandsClass {
                         player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                     }
                     break;
+                case "take":
+                    if (player.hasPermission(pluginNameLower + ".command.take")) {
+                        if(args.length >= 3) {
+                            String targetName = args[1];
+
+                            if (Economy.Currency.hasID(args[2])) {
+                                try {
+                                    String currency = args[2];
+                                    int amount = args.length == 4 ? Integer.parseInt(args[3]) : -69420;
+
+                                    if(amount == -69420) {
+                                        player.sendMessage(MessagesYML.Errors.NO_NUMBER_SPECIFIED.withPrefix(arg));
+                                        return;
+                                    }
+
+                                    if(amount <= 0) {
+                                        player.sendMessage(MessagesYML.Errors.NO_NEGATIVE.withPrefix(arg));
+                                        return;
+                                    }
+
+                                    if (!Bukkit.getOfflinePlayer(targetName).isOnline()) {
+                                        if(player instanceof Player) player.sendMessage(MessagesYML.Errors.NOT_ONLINE.withPrefix(arg));
+                                        return;
+                                    }
+
+                                    Player target = Bukkit.getPlayer(args[1]);
+                                    final int inInvConst = CurrencyUtils.getCurrencyAmount(currency, target.getInventory());
+                                    int amountVar = amount;
+
+                                    if(inInvConst >= amount) {
+                                        List<ConfigPair<Integer, String>> currs = new ArrayList<>();
+                                        currs.add(new ConfigPair<>(amount, currency));
+
+                                        CurrencyUtils.logTransaction(new TransactionLog(
+                                                targetName,
+                                                arg != null ? arg.getName() : "CONSOLE",
+                                                "",
+                                                currs
+                                        ).currenciesWithdraw(true));
+
+                                        for(int i = 0; i < target.getInventory().getContents().length; i++) {
+                                            ItemStack item = target.getInventory().getContents()[i];
+
+                                            if(item == null) continue;
+                                            if(NBTEditor.contains(item, "CurrencyId")) {
+                                                if (NBTEditor.getString(item, "CurrencyId").equalsIgnoreCase(currency)) {
+                                                    // Subtract until the desired amount is reached
+                                                    if(amountVar > 0) {
+                                                        int aux = amountVar;
+                                                        amountVar -= item.getAmount();
+
+                                                        if (aux >= item.getAmount()) item.setAmount(0);
+                                                        else item.setAmount(item.getAmount() - aux);
+
+                                                        target.getInventory().setItem(i, item);
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        player.sendMessage(MessagesYML.CURRENCY_TAKEN.withPrefix(arg)
+                                                .replace("$currency$", currency)
+                                                .replace("$player$", targetName)
+                                                .replace("$amount$", Utils.formatNumber(amount, false))
+                                        );
+                                    }
+                                } catch (NumberFormatException ne) {
+                                    player.sendMessage(MessagesYML.Errors.NO_NUMBER.withPrefix(arg));
+                                }
+                            } else {
+                                player.sendMessage(MessagesYML.Errors.INVALID_CURRENCY.withPrefix(arg));
+                            }
+                        } else {
+                            player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
+                    break;
             }
         });
     }

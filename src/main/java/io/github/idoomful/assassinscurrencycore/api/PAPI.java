@@ -1,6 +1,7 @@
 package io.github.idoomful.assassinscurrencycore.api;
 
 import io.github.idoomful.assassinscurrencycore.DMain;
+import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -84,6 +85,12 @@ public class PAPI extends PlaceholderExpansion {
 
         if(identifier.startsWith("currencymixd_") || identifier.startsWith("currmixd_") || identifier.startsWith("mixd_") || identifier.startsWith("md_")) {
             return mixCurrencies(pl, phCurrency, true);
+        }
+
+        if(identifier.startsWith("playercurrency_")) {
+            phCurrency = identifier.replaceFirst("_", "*").split("\\*")[1];
+            if(player.isOnline()) return CurrencyUtils.getCurrencyAmount(phCurrency, player.getPlayer().getInventory()) + "";
+            else return "0";
         }
 
         return null;

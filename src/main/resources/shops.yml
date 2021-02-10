@@ -210,7 +210,7 @@ shops:
       'apple':
         icon: "id:apple"
         prices:
-          - "15 bronze"
+          - "16 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar&a!"
@@ -244,9 +244,9 @@ shops:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Fumigena&a!"
           - "ag $player$ 3 $quantity$"
       'dynamite':
-        icon: "id:tnt hideFlags name:&lDinamita lore:&8Arunca_acest_item_pe_jos_si_fugi!|&7Similar_cu_TNT-ul,_dinamita_provoaca_daune|&7jucatorilor,_dar_nu_si_constructiilor._In_functie|&7de_proximitate,_poti_pierde_3-5_inimi.|&7|&cDe_unica_folosinta|&7|&8Cooldown_de_5_secunde!"
+        icon: "id:tnt hideFlags name:&f&lDinamita lore:&8Arunca_acest_item_pe_jos_si_fugi!|&7Similar_cu_TNT-ul,_dinamita_provoaca_daune|&7jucatorilor,_dar_nu_si_constructiilor._In_functie|&7de_proximitate,_poti_pierde_3-5_inimi.|&7|&cDe_unica_folosinta|&7|&8Cooldown_de_3_secunde!"
         prices:
-          - "5 silver"
+          - "2 silver"
         give-itself: false
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Dinamita&a!"
@@ -254,7 +254,7 @@ shops:
       'gapple1':
         icon: "id:golden_apple"
         prices:
-          - "2 silver"
+          - "3 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar de aur normal&a!"
@@ -294,9 +294,9 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Instant Health'&a!"
       'harm':
-        icon: "id:potion:16428"
+        icon: "id:splash_potion effect:instant_damage/2/0"
         prices:
-          - "5 silver"
+          - "4 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune Splash 'Instant Damage'&a!"
@@ -320,7 +320,7 @@ shops:
       'icepick':
         icon: "id:iron_hoe unbreakable hideFlags name:&f&lPiolet lore:&8Instrument_folosit_pentru_escaladari|&7Stai_aproape_de_un_perete_si_apasa|&7click_dreapta_repetat_pentru_a_escalada."
         prices:
-          - "1 silver"
+          - "1 gold"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Piolet&a!"
@@ -333,7 +333,7 @@ shops:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Carlig tactic&a!"
           - "ag $player$ 1 100"
       'wallet':
-        icon: "id:skull:3 name:&8»_&3Portofel lore:&7Inventarul_tau_e_prea_plin_cu_monede|&7si_crezi_ca_nu_esti_in_siguranta_cu|&7atatia_bani_la_tine?|&7|&7Acest_item_poate_depozita_monedele_tale|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
+        icon: "id:skull:3 name:&dPortofel lore:&7Acest_item_iti_poate_depozita_monedele|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
         prices:
           - "5 gold"
         give-itself: false

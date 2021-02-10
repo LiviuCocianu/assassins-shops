@@ -706,7 +706,16 @@ public class EventsClass implements Listener {
 
                         int newUses = Math.min(uses + given, maxUses);
 
-                        if(CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name), true).isEmpty()) return;
+                        if(CurrencyUtils.withdrawCosts(player, SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name), true).isEmpty()) {
+                            return;
+                        } else {
+                            CurrencyUtils.logTransaction(new TransactionLog(
+                                    player.getName(),
+                                    "",
+                                    "bought an item repair",
+                                    SettingsYML.RepairCosts.OPTIONS.getGadgetCosts(name)
+                            ).currenciesWithdraw(true));
+                        }
 
                         ItemMeta im = inHand.getItemMeta();
                         List<String> newLore = im.getLore();

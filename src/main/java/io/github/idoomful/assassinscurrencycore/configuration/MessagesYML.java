@@ -23,6 +23,7 @@ public enum MessagesYML {
     CURRENCY_SAVED("currency-saved"),
     REPAIRED("repaired"),
     CURRENCY_SET("currency-set"),
+    CURRENCY_TAKEN("currency-taken"),
     GIVEN_ITEM("given-item");
 
     String output;

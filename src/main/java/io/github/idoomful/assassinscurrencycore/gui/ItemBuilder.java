@@ -2,6 +2,7 @@ package io.github.idoomful.assassinscurrencycore.gui;
 
 import dev.dbassett.skullcreator.SkullCreator;
 import io.github.bananapuncher714.nbteditor.NBTEditor;
+import io.github.idoomful.assassinscurrencycore.gui.IdentifierToMaterial;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -13,8 +14,10 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +27,7 @@ public class ItemBuilder {
     @SuppressWarnings("deprecation")
     public static ItemStack build(String value) {
         ItemStack result = new ItemStack(Material.STONE, 1);
+        String ID = "";
 
         String[] data = value.split(" ");
 
@@ -53,26 +57,34 @@ public class ItemBuilder {
             // TODO Check for ID
             if (aData.startsWith("id:")) {
                 String id = aData.substring(aData.indexOf(":") + 1);
-                if (!id.contains(":")) {
-                    result.setType(IdentifierToMaterial.getMaterialByID(id));
-                    continue;
-                }
 
                 if (id.contains(":")) {
                     String[] separate = id.split(":");
-                    result.setType(IdentifierToMaterial.getMaterialByID(separate[0]));
 
-                    int DAMAGE = Integer.parseInt(separate[1]);
+                    id = separate[0];
+                    int damage = Integer.parseInt(separate[1]);
+
+                    result.setType(IdentifierToMaterial.getMaterialByID(id));
+
                     try {
-                        if (DAMAGE > 9999) {
+                        if (damage > 9999) {
                             result.setDurability((short) 1);
                             continue;
                         }
-                        result.setDurability((short) DAMAGE);
+                        result.setDurability((short) damage);
 
                     } catch (NumberFormatException e) {
                         result.setDurability((short) 1);
                     }
+                } else {
+                    ID = id;
+
+                    if(ID.equalsIgnoreCase("splash_potion")) {
+                        result.setType(IdentifierToMaterial.getMaterialByID("potion"));
+                    } else {
+                        result.setType(IdentifierToMaterial.getMaterialByID(id));
+                    }
+                    continue;
                 }
             }
             // TODO Check for amount
@@ -89,6 +101,23 @@ public class ItemBuilder {
                 }
             }
 
+            // TODO Check for "player"
+            if (aData.startsWith("player:") && (Utils.usesVersionBetween("1.4.x", "1.12.x")
+                    ? result.getType().toString().equals("SKULL_ITEM")
+                    : result.getType().toString().equals("PLAYER_HEAD")
+            ) && (!Utils.usesVersionBetween("1.4.x", "1.12.x") || result.getDurability() == 3)
+            ) {
+                String playername = aData.split(":")[1];
+
+                SkullMeta sm = (SkullMeta) result.getItemMeta();
+                assert sm != null;
+
+                if(Utils.usesVersionBetween("1.4.x", "1.11.x")) sm.setOwner(playername);
+                else sm.setOwningPlayer(Bukkit.getOfflinePlayer(playername));
+
+                result.setItemMeta(sm);
+            }
+
             // TODO Check for "pattern"
             if (aData.startsWith("pattern:") && result.getType() == Material.BANNER) {
                 String pattern = aData.split(":")[1];
@@ -103,28 +132,11 @@ public class ItemBuilder {
                 result.setItemMeta(bm);
             }
 
-            // TODO Check for "player"
-            if (aData.startsWith("player:") && (Utils.usesVersionBetween("1.4.x", "1.12.x")
-                    ? result.getType().toString().equals("SKULL_ITEM")
-                    : result.getType().toString().equals("PLAYER_HEAD")
-                    ) && (!Utils.usesVersionBetween("1.4.x", "1.12.x") || result.getDurability() == 3)
-            ) {
-                String playername = aData.split(":")[1];
-
-                SkullMeta sm = (SkullMeta) result.getItemMeta();
-                assert sm != null;
-
-                if(Utils.usesVersionBetween("1.4.x", "1.11.x")) sm.setOwner(playername);
-                else sm.setOwningPlayer(Bukkit.getOfflinePlayer(playername));
-
-                result.setItemMeta(sm);
-            }
-
             // TODO Check for "urlCode"
             if(aData.startsWith("urlCode:") && (Utils.usesVersionBetween("1.4.x", "1.12.x")
                     ? result.getType().toString().equals("SKULL_ITEM")
                     : result.getType().toString().equals("PLAYER_HEAD")
-                    ) && (!Utils.usesVersionBetween("1.4.x", "1.12.x") || result.getDurability() == 3)
+            ) && (!Utils.usesVersionBetween("1.4.x", "1.12.x") || result.getDurability() == 3)
             ) {
                 String code = aData.split(":")[1];
 
@@ -236,9 +248,9 @@ public class ItemBuilder {
             // TODO Check for potion effects
             if (aData.startsWith("effect:") && result.getType().equals(Material.POTION)) {
                 String[] v = aData.split("/");
-                String effect = v[0].substring(v[0].indexOf(":") + 1);
-                String effectPower = v[1].substring(v[1].indexOf(":") + 1);
-                String effectDuration = v[2].substring(v[2].indexOf(":") + 1);
+                String effect = v[0].split(":")[1];
+                String effectPower = v[1];
+                String effectDuration = v[2];
 
                 short power;
                 int duration;
@@ -267,6 +279,24 @@ public class ItemBuilder {
                     for (String effect2 : effectList) addEffect(effect2, im, power, duration);
                 } else {
                     addEffect(effect, im, power, duration);
+
+                    if(ID.equalsIgnoreCase("splash_potion")) {
+                        PotionEffect first = im.getCustomEffects().stream().findAny().get();
+                        String effStr = first.getType().getName();
+
+                        String eff = effStr.equals("HARM")
+                                ? "INSTANT_DAMAGE"
+                                : effStr.equals("HEAL") ? "INSTANT_HEAL" : effStr;
+
+                        Potion pot = new Potion(PotionType.valueOf(eff), power);
+                        pot.setSplash(true);
+
+                        if(!eff.contains("INSTANT_DAMAGE") && !eff.contains("HEAL"))
+                            pot.setHasExtendedDuration(duration == 1);
+
+                        pot.apply(result);
+                        continue;
+                    }
                 }
 
                 result.setItemMeta(im);
@@ -274,6 +304,7 @@ public class ItemBuilder {
         }
         return result;
     }
+
     private static void addEffect(String effect, PotionMeta im, short power, int duration) {
         if (!Utils.usesVersionBetween("1.4.x", "1.8.x")) {
             if (effect.equalsIgnoreCase("levitation")) {

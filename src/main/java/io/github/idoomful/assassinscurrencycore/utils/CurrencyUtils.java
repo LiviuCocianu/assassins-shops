@@ -343,6 +343,22 @@ public class CurrencyUtils {
         return total >= Objects.requireNonNull(Economy.Worth.getWorth(above)).getKey();
     }
 
+    public static int getCurrencyAmount(String currency, Inventory inventory) {
+        int amount = 0;
+
+        for(int i = 0; i < inventory.getContents().length; i++) {
+            ItemStack item = inventory.getContents()[i];
+
+            if(item == null) continue;
+            if(NBTEditor.contains(item, "CurrencyId")) {
+                if(NBTEditor.getString(item, "CurrencyId").equalsIgnoreCase(currency))
+                amount += item.getAmount();
+            }
+        }
+
+        return amount;
+    }
+
     public static void createLogsFile() {
         String logsFileName = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         File logsFile = new File(
