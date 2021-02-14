@@ -59,7 +59,7 @@ public class Utils {
         DecimalFormat output = new DecimalFormat("###,###,###,###,###");
         output.setGroupingUsed(true);
 
-        double decimals = num - ((int) num);
+        float decimals = (float) (num - ((int) num));
 
         String strDecimals = (decimals + "").replaceAll("^0\\.", "").replace(".", ",");
         strDecimals = strDecimals.equals(",0") ? "" : strDecimals;

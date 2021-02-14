@@ -4,11 +4,14 @@ import io.github.idoomful.assassinscurrencycore.DMain;
 import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PAPI extends PlaceholderExpansion {
@@ -105,46 +108,53 @@ public class PAPI extends PlaceholderExpansion {
 
         if(bank.get() == null) return "0";
 
-        float mixed = 0;
-        float inferior = 1, superior = 0, superiorMult = 1;
         boolean isSuperior = false;
 
-        int index = 0;
-        for (String currency : Economy.Currency.getIDs()) {
-            int inBank = bank.get().get(currency);
+        double mix = 0;
+        int worth = Economy.Worth.getWorthAbove(Economy.Currency.getIDs().get(0), 1);
+        double worthAcc = worth;
 
-            if (phCurr.equals(currency)) {
-                mixed += inBank;
-                isSuperior = true;
-                index += 100;
-                continue;
+        if (!phCurr.equals(Economy.Currency.getIDs().get(0))) {
+            for (String currency : Economy.Currency.getIDs()) {
+                if (phCurr.equals(currency)) break;
+                if (currency.equals(Economy.Currency.getIDs().get(0))) continue;
+
+                int above = Economy.Worth.getWorthAbove(Economy.Currency.getIDs().get(0), 2);
+                above = above == -1 ? 1 : above;
+
+                worthAcc *= above;
             }
-
-            if (index == 0) inferior = inBank;
-            if (index >= 100) {
-                superiorMult = inBank == 0 ? 1 : inBank;
-                index -= 99;
-            }
-
-            int worth = Economy.Worth.getWorthAbove(currency, 1);
-            worth = worth == 0 ? 1 : worth;
-
-            // Get actual worth for the biggest currency
-            if((index == Economy.Currency.getIDs().size() - 1) && inBank > 0) {
-                worth = Economy.Worth.getWorth(currency).getKey();
-            }
-
-            if (!isSuperior) inferior = inferior / worth;
-            else {
-                superiorMult = superiorMult * worth;
-                superior += inBank * superiorMult;
-            }
-
-            index++;
+        } else {
+            worthAcc = 1;
         }
 
-        mixed += inferior + superior;
+        for (String currency : Economy.Currency.getIDs()) {
+            double bankAmount = bank.get().get(currency);
 
-        return Utils.formatNumber(mixed, includeDecimals);
+            if (!isSuperior && !phCurr.equals(currency)) mix += bankAmount / worthAcc;
+            else mix += bankAmount * worthAcc;
+
+            worth = Economy.Worth.getWorthAbove(currency, 1) != -1
+                    ? Economy.Worth.getWorthAbove(currency, 1)
+                    : 1;
+
+            if(phCurr.equals(currency)) {
+                int fetch = Objects.requireNonNull(Economy.Worth.getWorth(currency)).getKey();
+
+                if(fetch == -1) worthAcc = Economy.Worth.getWorthAbove(currency, 1);
+                else worthAcc = Objects.requireNonNull(Economy.Worth.getWorth(currency)).getKey();
+
+                isSuperior = true;
+            }
+
+            else if(!isSuperior) worthAcc /= worth;
+            else worthAcc *= worth;
+        }
+
+        String format = Utils.formatNumber((float) mix, includeDecimals);
+
+        float decimal = (float) (mix - ((int) mix));
+
+        return decimal > 0 && !includeDecimals ? ("~" + format) : format;
     }
 }

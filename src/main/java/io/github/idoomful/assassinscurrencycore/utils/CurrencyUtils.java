@@ -216,6 +216,24 @@ public class CurrencyUtils {
             reached.set(true);
         }
 
+        // Rearrange currency leftovers scattered around in the inventory
+        if(way == ConvertWay.UP) {
+            List<ItemStack> arranged = new ArrayList<>();
+
+            for(int i = 0; i < player.getInventory().getContents().length; i++) {
+                ItemStack item = player.getInventory().getContents()[i];
+
+                if(item == null) continue;
+                if(NBTEditor.contains(item, "CurrencyId")) {
+                    if(item.getAmount() < 64) {
+                        arranged.add(item);
+                        player.getInventory().setItem(i, null);
+                    }
+                }
+            }
+
+            arranged.forEach(player.getInventory()::addItem);
+        }
 
         if(reached.get()) {
             if (way == ConvertWay.UP) player.sendMessage(MessagesYML.CONVERTED_UP.withPrefix(player));

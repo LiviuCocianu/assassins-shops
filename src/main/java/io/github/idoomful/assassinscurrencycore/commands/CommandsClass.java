@@ -332,18 +332,12 @@ public class CommandsClass {
 
                                 Player target = Bukkit.getPlayer(args[1]);
 
-                                if(result) plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
-                                else {
-                                    if(player instanceof Player && player.getName().equalsIgnoreCase(args[1])) {
-                                        player.sendMessage(MessagesYML.CREATING_BANK.withPrefix((Player) player));
-                                        createEntry(player.getName());
-
-                                        plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
-                                        return;
-                                    }
-
-                                    player.sendMessage(MessagesYML.Errors.NO_BANK.withPrefix(null));
+                                if(!result) {
+                                    player.sendMessage(MessagesYML.CREATING_BANK.withPrefix(arg));
+                                    createEntry(target.getName());
                                 }
+
+                                plugin.getOpenedBanks().put(target.getUniqueId(), new BankInventoryGUI(target));
                             });
                         } else if(args.length == 1 && player instanceof Player) {
                             Player pl = (Player) player;

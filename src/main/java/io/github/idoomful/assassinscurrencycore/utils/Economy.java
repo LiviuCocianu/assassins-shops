@@ -67,7 +67,7 @@ public class Economy {
                 );
             }
 
-            return null;
+            return new ConfigPair<>(-1, "null");
         }
 
         public static int getWorthAbove(String id, int steps) {
@@ -77,7 +77,7 @@ public class Economy {
 
             String above = ids.get(ids.indexOf(id) + steps);
 
-            return Integer.parseInt(settings.getString("currency-worths." + above).split(" ")[0]);
+            return Integer.parseInt(settings.getString("currency-worths." + above, "-1 null").split(" ")[0]);
         }
 
         public static int getWorthBelow(String id, int steps) {
