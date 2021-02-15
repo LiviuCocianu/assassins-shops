@@ -6,6 +6,7 @@ import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.utils.Sounds;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -36,6 +37,46 @@ public enum SettingsYML {
     }
     public ItemStack getItem() {
         return ItemBuilder.build(settings.getString(path));
+    }
+
+    public enum TopOptions {
+        DEFAULT_CURRENCY("default-currency"),
+        PER_PAGE("per-page"),
+        CURRENCY_LANG("currency-lang"),
+        LIST_HEADER("list-header"),
+        LIST_FOOTER("list-footer"),
+        INDIVIDUAL_ENTRY_FORMATS("individual-entry-formats"),
+        EMPTY_ENTRY_FORMAT("empty-entry-format"),
+        ENTRY_FORMAT("entry-format");
+
+        public String path;
+        public FileConfiguration settings;
+
+        TopOptions(String string) {
+            this.path = "top-options." + string;
+            this.settings = SettingsYML._OPTIONS.settings;
+        }
+
+        public String getString(Player player) {
+            return Utils.placeholder(player, settings.getString(path));
+        }
+        public int getInt() {
+            return settings.getInt(path);
+        }
+        public List<String> getStringList(Player player) {
+            return Utils.placeholder(player, settings.getStringList(path));
+        }
+        public String getCurrencyLang(String currency) {
+            return settings.getString(path + "." + currency);
+        }
+        public List<Integer> getIndividualFormats() {
+            List<Integer> output = new ArrayList<>();
+            settings.getConfigurationSection(path).getKeys(false).forEach(e -> output.add(Integer.parseInt(e)));
+            return output;
+        }
+        public String getIndividualFormat(OfflinePlayer player, int position) {
+            return Utils.placeholder(player, settings.getString(path + "." + position));
+        }
     }
 
     public enum ShopOptions {

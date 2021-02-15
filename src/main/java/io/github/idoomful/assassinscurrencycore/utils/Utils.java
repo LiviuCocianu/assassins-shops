@@ -33,13 +33,13 @@ public class Utils {
         return input.stream().map(Utils::color).collect(Collectors.toList());
     }
 
-    public static String placeholder(Player player, String input) {
+    public static String placeholder(OfflinePlayer player, String input) {
         if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null)
             return PlaceholderAPI.setPlaceholders(player, input);
         else return color(input);
     }
 
-    public static List<String> placeholder(Player player, List<String> input) {
+    public static List<String> placeholder(OfflinePlayer player, List<String> input) {
         if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null)
             return PlaceholderAPI.setPlaceholders(player, input);
         else return color(input);

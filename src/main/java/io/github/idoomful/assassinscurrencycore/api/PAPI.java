@@ -52,12 +52,11 @@ public class PAPI extends PlaceholderExpansion {
         String phCurrency = "";
 
         String[] subs = {
-                "currency", "curr", "c", "currencymix", "currmix", "mix", "m",
-                "currencymixd", "currmixd", "mixd", "md"
+                "currency", "curr", "c", "currencymix", "currmix", "mix", "m"
         };
 
         for(String sub : subs) {
-            if(identifier.startsWith(sub + "_")) {
+            if(identifier.startsWith(sub)) {
                 phCurrency = identifier.replaceFirst("_", "*").split("\\*")[1];
 
                 // Handle placeholders of this format: acurrency_c_gold@iDoomful
@@ -82,12 +81,19 @@ public class PAPI extends PlaceholderExpansion {
             return Utils.formatNumber(inv.get().get(phCurrency), false);
         }
 
-        if(identifier.startsWith("currencymix_") || identifier.startsWith("currmix_") || identifier.startsWith("mix_") || identifier.startsWith("m_")) {
-            return mixCurrencies(pl, phCurrency, false);
-        }
+        if(identifier.startsWith("currencymix") || identifier.startsWith("currmix") || identifier.startsWith("mix") || identifier.startsWith("m")) {
+            String mixAlias = identifier.contains("currencymix")
+                    ? "currencymix"
+                    : identifier.startsWith("currmix")
+                    ? "currmix"
+                    : identifier.startsWith("mix")
+                    ? "mix"
+                    : identifier.startsWith("m") ? "m" : "";
 
-        if(identifier.startsWith("currencymixd_") || identifier.startsWith("currmixd_") || identifier.startsWith("mixd_") || identifier.startsWith("md_")) {
-            return mixCurrencies(pl, phCurrency, true);
+            String mixFormats = identifier.replace(mixAlias, "");
+            mixFormats = mixFormats.substring(0, mixFormats.indexOf("_"));
+
+            return mixCurrencies(pl, phCurrency, mixFormats.contains("d"), mixFormats.contains("f"));
         }
 
         if(identifier.startsWith("playercurrency_")) {
@@ -99,7 +105,7 @@ public class PAPI extends PlaceholderExpansion {
         return null;
     }
 
-    private String mixCurrencies(String player, String phCurr, boolean includeDecimals) {
+    private String mixCurrencies(String player, String phCurr, boolean includeDecimals, boolean format) {
         AtomicReference<LinkedHashMap<String, Integer>> bank = new AtomicReference<>(null);
 
         plugin.getSQL().exists(player, res -> {
@@ -151,10 +157,17 @@ public class PAPI extends PlaceholderExpansion {
             else worthAcc *= worth;
         }
 
-        String format = Utils.formatNumber((float) mix, includeDecimals);
-
         float decimal = (float) (mix - ((int) mix));
 
-        return decimal > 0 && !includeDecimals ? ("~" + format) : format;
+        if(!format) {
+            String withDec = (((float) mix) + "");
+            String withoutDec = (((int) mix) + "");
+
+            withDec = decimal == 0 ? withDec.replace(".0", "") : withDec;
+            return includeDecimals ? withDec : withoutDec;
+        } else {
+            String formatted = Utils.formatNumber((float) mix, includeDecimals);
+            return decimal > 0 && !includeDecimals ? ("~" + formatted) : formatted;
+        }
     }
 }

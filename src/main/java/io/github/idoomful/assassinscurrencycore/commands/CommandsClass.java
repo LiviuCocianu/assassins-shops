@@ -14,14 +14,13 @@ import io.github.idoomful.assassinscurrencycore.utils.ConfigPair;
 import io.github.idoomful.assassinscurrencycore.utils.CurrencyUtils;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandsClass {
@@ -52,6 +51,28 @@ public class CommandsClass {
             }
 
             switch(args[0]) {
+                case "removeentry":
+                case "deleteentry":
+                    if(player.hasPermission(pluginNameLower + ".command.removeentry")
+                    || player.hasPermission(pluginNameLower + ".command.deleteentry")) {
+                        if(args.length == 2) {
+                            AtomicReference<List<String>> playersInDB = new AtomicReference<>();
+                            plugin.getSQL().getPlayers(playersInDB::set);
+
+                            if(!playersInDB.get().contains(args[1])) {
+                                player.sendMessage(MessagesYML.Errors.NO_BANK.withPrefix(arg));
+                                return;
+                            }
+
+                            plugin.getSQL().removeEntry(args[1]);
+                            player.sendMessage(MessagesYML.DELETED_BANK.withPrefix(arg).replace("$player$", args[1]));
+                        } else {
+                            player.sendMessage(MessagesYML.Errors.WRONG_ARGUMENT_COUNT.withPrefix(arg));
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
+                    break;
                 case "item":
                     if(player.hasPermission(pluginNameLower + ".command.item")) {
                         if(args.length == 3 || args.length == 4) {
@@ -489,6 +510,94 @@ public class CommandsClass {
                         player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
                     }
                     break;
+                case "top":
+                    if (player.hasPermission(pluginNameLower + ".command.top")) {
+                        String currency;
+                        int page = 1;
+
+                        if(args.length >= 2) currency = args[1];
+                        else currency = SettingsYML.TopOptions.DEFAULT_CURRENCY.getString(arg);
+
+                        if(args.length >= 3) page = Integer.parseInt(args[2]);
+                        page = Math.min(page, 1000);
+                        page = Math.max(1, page);
+
+                        AtomicReference<List<String>> playersInDB = new AtomicReference<>();
+                        plugin.getSQL().getPlayers(playersInDB::set);
+
+                        int databaseSize = playersInDB.get().size();
+
+                        TreeMap<Float, String> top = new TreeMap<>(Collections.reverseOrder());
+
+                        for(int i = 0; i < databaseSize; i++) {
+                            String name = playersInDB.get().get(i);
+                            float value = Float.parseFloat(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(name), "%acurrency_md_" + currency + "%"));
+                            top.put(value, name);
+                        }
+
+                        final int pageLength = SettingsYML.TopOptions.PER_PAGE.getInt();
+
+                        int start = (pageLength * page) - pageLength;
+
+                        if(start > databaseSize) {
+                            while(((pageLength * page) - pageLength) > databaseSize) page--;
+                            start = (pageLength * page) - pageLength;
+                        }
+
+                        int end = (pageLength * page) - 1;
+
+                        for(String headerLine : SettingsYML.TopOptions.LIST_HEADER.getStringList(arg)) {
+                            player.sendMessage(headerLine
+                                    .replace("$page$", page + "")
+                                    .replace("$currency$", SettingsYML.TopOptions.CURRENCY_LANG.getCurrencyLang(currency))
+                            );
+                        }
+
+                        Float[] values = top.keySet().toArray(new Float[0]);
+                        String[] players = top.values().toArray(new String[0]);
+
+                        for(int i = start; i < end; i++) {
+                            List<Integer> individuals = SettingsYML.TopOptions.INDIVIDUAL_ENTRY_FORMATS.getIndividualFormats();
+                            int number = i + 1;
+
+                            if(individuals.contains(number) && players.length > i) {
+                                OfflinePlayer target = Bukkit.getOfflinePlayer(players[i]);
+                                player.sendMessage(SettingsYML.TopOptions.INDIVIDUAL_ENTRY_FORMATS.getIndividualFormat(target, number)
+                                        .replace("$number$", number + "")
+                                        .replace("$player$", players[i])
+                                        .replace("$value$", values[i] + "")
+                                        .replace("$currency$", SettingsYML.TopOptions.CURRENCY_LANG.getCurrencyLang(currency))
+                                );
+                            } else {
+                                if(players.length <= i) {
+                                    for(String line : SettingsYML.TopOptions.EMPTY_ENTRY_FORMAT.getStringList(arg)) {
+                                        player.sendMessage(line
+                                                .replace("$number$", number + "")
+                                                .replace("$currency$", SettingsYML.TopOptions.CURRENCY_LANG.getCurrencyLang(currency))
+                                        );
+                                    }
+                                } else {
+                                    for(String line : SettingsYML.TopOptions.ENTRY_FORMAT.getStringList(arg)) {
+                                        player.sendMessage(line
+                                                .replace("$number$", number + "")
+                                                .replace("$player$", players[i])
+                                                .replace("$value$", values[i] + "")
+                                                .replace("$currency$", SettingsYML.TopOptions.CURRENCY_LANG.getCurrencyLang(currency))
+                                        );
+                                    }
+                                }
+                            }
+                        }
+
+                        for(String headerLine : SettingsYML.TopOptions.LIST_FOOTER.getStringList(arg)) {
+                            player.sendMessage(headerLine
+                                    .replace("$page$", page + "")
+                                    .replace("$currency$", SettingsYML.TopOptions.CURRENCY_LANG.getCurrencyLang(currency))
+                            );
+                        }
+                    } else {
+                        player.sendMessage(MessagesYML.Errors.NO_PERMISSION.withPrefix(arg));
+                    }
             }
         });
     }

@@ -18,6 +18,7 @@ public enum MessagesYML {
     CONVERTED_UP("converted-up"),
     CONVERTED_DOWN("converted-down"),
     CREATING_BANK("creating-bank"),
+    DELETED_BANK("deleted-bank"),
     CURRENCY_FORMAT("currency-format"),
     CURRENCY_SEPARATOR("currency-separator"),
     CURRENCY_SAVED("currency-saved"),

@@ -332,6 +332,11 @@ public class EventsClass implements Listener {
 
                 main.getSQL().subtractFromBank(player.getName(), currency, clicked.getAmount());
             }
+        } else if(e.getView().getBottomInventory().equals(e.getClickedInventory())
+                && e.getView().getTopInventory().getHolder() instanceof BankInventoryGUI) {
+            if(e.getClick() == ClickType.MIDDLE || e.isShiftClick()) {
+                e.setCancelled(true);
+            }
         }
     }
 

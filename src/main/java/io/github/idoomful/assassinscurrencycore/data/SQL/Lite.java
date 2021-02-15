@@ -6,6 +6,7 @@ import io.github.idoomful.assassinscurrencycore.utils.Economy;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class Lite {
@@ -79,6 +80,18 @@ public class Lite {
         try(PreparedStatement ps = con.prepareStatement("DELETE FROM " + TABLE + " WHERE `name`=?")) {
             ps.setString(1, player);
             ps.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void getPlayers(Callback<ArrayList<String>> result) {
+        ArrayList<String> output = new ArrayList<>();
+
+        try(PreparedStatement ps = con.prepareStatement("SELECT * FROM " + TABLE)) {
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) output.add(rs.getString(1));
+            result.done(output);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

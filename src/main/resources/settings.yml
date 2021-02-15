@@ -12,6 +12,40 @@ currency-worths:
   'gold_bag': "10 gold"
   'crystal': "10 gold_bag"
 
+top-options:
+  # If the player doesn't specify what currency to display the
+  # top for, it will default to this value
+  default-currency: "gold"
+
+  # The amount of entries to load per page
+  per-page: 10
+
+  currency-lang:
+    bronze: "bronz"
+    silver: "argint"
+    gold: "aur"
+    gold_bag: "sac cu aur"
+    crystal: "cristal"
+
+  list-header:
+    - ""
+    - "&8&m-+-------&7 &6Top monede &8(&7 $currency$ &8) &m--------+-"
+    - ""
+  list-footer:
+    - ""
+    - "&8&m-+----------&7 [ Pagina $page$ ] &8&m-----------+-"
+
+  # Do you want to make certain entries look different?
+  # You can do that here. You can also use PlaceholderAPI in these formats
+  individual-entry-formats:
+    '1': "  &8✪  &f#1  $player$  $value$ $currency$"
+    '2': "  &8✪  &f#2  $player$  $value$ $currency$"
+    '3': "  &8✪  &f#3  $player$  $value$ $currency$"
+  empty-entry-format:
+    - "  &8»  &m-------------------------------"
+  entry-format:
+    - "  &8»  &7#$number$  $player$  $value$ $currency$"
+
 shop-options:
   rows: 3
   price-format: "&7x$amount$ $currency$"
