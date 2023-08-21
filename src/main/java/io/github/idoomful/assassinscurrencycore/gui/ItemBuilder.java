@@ -2,8 +2,8 @@ package io.github.idoomful.assassinscurrencycore.gui;
 
 import dev.dbassett.skullcreator.SkullCreator;
 import io.github.bananapuncher714.nbteditor.NBTEditor;
-import io.github.idoomful.assassinscurrencycore.gui.IdentifierToMaterial;
 import io.github.idoomful.assassinscurrencycore.utils.Utils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -28,6 +28,9 @@ public class ItemBuilder {
     public static ItemStack build(String value) {
         ItemStack result = new ItemStack(Material.STONE, 1);
         String ID = "";
+        int attributeIndex = 0;
+        int totalAttributeCount = 0;
+        boolean setAttackDamage = false;
 
         String[] data = value.split(" ");
 
@@ -53,6 +56,9 @@ public class ItemBuilder {
             ));
         }
 
+        for (String aData : data)
+            if(aData.startsWith("attribute:")) totalAttributeCount++;
+
         for (String aData : data) {
             // TODO Check for ID
             if (aData.startsWith("id:")) {
@@ -64,7 +70,11 @@ public class ItemBuilder {
                     id = separate[0];
                     int damage = Integer.parseInt(separate[1]);
 
-                    result.setType(IdentifierToMaterial.getMaterialByID(id));
+                    Material mat = IdentifierToMaterial.getMaterialByID(id) == null
+                            ? Material.STONE
+                            : IdentifierToMaterial.getMaterialByID(id);
+
+                    result.setType(mat);
 
                     try {
                         if (damage > 9999) {
@@ -80,9 +90,13 @@ public class ItemBuilder {
                     ID = id;
 
                     if(ID.equalsIgnoreCase("splash_potion")) {
-                        result.setType(IdentifierToMaterial.getMaterialByID("potion"));
+                        result.setType(Material.SPLASH_POTION);
                     } else {
-                        result.setType(IdentifierToMaterial.getMaterialByID(id));
+                        Material mat = IdentifierToMaterial.getMaterialByID(id) == null
+                                ? Material.STONE
+                                : IdentifierToMaterial.getMaterialByID(id);
+
+                        result.setType(mat);
                     }
                     continue;
                 }
@@ -224,6 +238,22 @@ public class ItemBuilder {
                 }
             }
 
+            // TODO Check for "hideFlag"
+            if (aData.startsWith("hideFlag:")) {
+                ItemMeta im = result.getItemMeta();
+                String flagStr = aData.split(":")[1];
+
+                try {
+                    if(!flagStr.startsWith("hide")) flagStr = "hide_" + flagStr;
+                    ItemFlag flag = ItemFlag.valueOf(flagStr.toUpperCase());
+                    im.addItemFlags(flag);
+
+                    result.setItemMeta(im);
+                } catch(IllegalArgumentException ia) {
+                    continue;
+                }
+            }
+
             // TODO Check for "hideFlags"
             if (aData.equalsIgnoreCase("hideFlags")) {
                 ItemMeta im = result.getItemMeta();
@@ -243,6 +273,110 @@ public class ItemBuilder {
 
                 if (Utils.usesVersionBetween("1.4.x", "1.8.x"))
                     result = NBTEditor.set(result, (byte) 1, "Unbreakable");
+            }
+
+            // TODO Check for "nbt-string"
+            if (aData.startsWith("nbt-string:")) {
+                String tag = aData.split(":")[1];
+                String string = aData.split(":")[2].replace("_", " ");
+
+                result = NBTEditor.set(result, string, tag);
+            }
+
+            // TODO Check for "nbt-int"
+            if (aData.startsWith("nbt-int:")) {
+                String tag = aData.split(":")[1];
+
+                try {
+                    int integer = Integer.parseInt(aData.split(":")[2]);
+                    result = NBTEditor.set(result, integer, tag);
+                } catch(NumberFormatException ignored) {}
+            }
+
+            // TODO Check for "nbt-float"
+            if (aData.startsWith("nbt-float:")) {
+                String tag = aData.split(":")[1];
+
+                try {
+                    float floating = Float.parseFloat(aData.split(":")[2]);
+                    result = NBTEditor.set(result, floating, tag);
+                } catch(NumberFormatException ignored) {}
+            }
+
+            // TODO Check for "attribute"
+            if(aData.startsWith("attribute:")) {
+                String val = aData.split(":")[1];
+                String atr = val.split("/")[0];
+
+                if(Utils.usesVersionBetween("1.4.x", "1.15.x")) {
+                    atr = WordUtils.capitalizeFully(atr.replace("_", " "))
+                            .replace(" ", "");
+                    atr = (atr.charAt(0) + "").toLowerCase() + atr.substring(1);
+                }
+
+                float atrVal;
+
+                try {
+                    atrVal = Float.parseFloat(val.split("/")[1]);
+                } catch (NumberFormatException ne) {
+                    atrVal = 0;
+                }
+
+                int operation;
+
+                if(val.split("/").length <= 2) {
+                    operation = 0;
+                } else {
+                    try {
+                        operation = Integer.parseInt(val.split("/")[2]);
+                    } catch (NumberFormatException ne) {
+                        operation = 0;
+                    }
+                }
+
+                String slot = "mainhand";
+                boolean hasSlot = true;
+
+                if(val.split("/").length <= 3) {
+                    hasSlot = false;
+                } else {
+                    slot = val.split("/")[3];
+                }
+
+                NBTEditor.NBTCompound compound = NBTEditor.getNBTCompound(result);
+
+                if(atr.equals("attackDamage")) setAttackDamage = true;
+
+                compound.set("generic." + atr, "tag", "AttributeModifiers", null, "AttributeName");
+                compound.set("generic." + atr, "tag", "AttributeModifiers", attributeIndex, "Name");
+                if(hasSlot) compound.set(slot, "tag", "AttributeModifiers", attributeIndex, "Slot");
+                compound.set(operation, "tag", "AttributeModifiers", attributeIndex, "Operation");
+                compound.set(atrVal, "tag", "AttributeModifiers", attributeIndex, "Amount");
+                compound.set(new int[] { 0, 0, 0, 0 }, "tag", "AttributeModifiers", attributeIndex % 2 == 0 ? 0 : 1, "UUID");
+                compound.set(99L, "tag", "AttributeModifiers", attributeIndex, "UUIDMost");
+                compound.set(77530600L, "tag", "AttributeModifiers", attributeIndex, "UUIDLeast");
+
+                attributeIndex++;
+
+                if(attributeIndex == totalAttributeCount && !setAttackDamage) {
+                    for(ToolDamage tooldmg : ToolDamage.values()) {
+                        if(result.getType().name().equals(tooldmg.name())) {
+                            compound.set("generic.attackDamage", "tag", "AttributeModifiers", null, "AttributeName");
+                            compound.set("generic.attackDamage", "tag", "AttributeModifiers", attributeIndex, "Name");
+                            compound.set("mainhand", "tag", "AttributeModifiers", attributeIndex, "Slot");
+                            compound.set(0, "tag", "AttributeModifiers", attributeIndex, "Operation");
+                            compound.set(tooldmg.get(), "tag", "AttributeModifiers", attributeIndex, "Amount");
+                            compound.set(new int[] { 0, 0, 0, 0 }, "tag", "AttributeModifiers", attributeIndex % 2 == 0 ? 0 : 1, "UUID");
+                            compound.set(99L, "tag", "AttributeModifiers", attributeIndex, "UUIDMost");
+                            compound.set(77530600L, "tag", "AttributeModifiers", attributeIndex, "UUIDLeast");
+
+                            attributeIndex++;
+                            break;
+                        }
+                    }
+                }
+
+                result = NBTEditor.getItemFromTag(compound);
             }
 
             // TODO Check for potion effects
@@ -342,6 +476,48 @@ public class ItemBuilder {
             case "health_boost": im.addCustomEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, duration, power), false); return;
             case "absorption": im.addCustomEffect(new PotionEffect(PotionEffectType.ABSORPTION, duration, power), false); return;
             case "saturation": im.addCustomEffect(new PotionEffect(PotionEffectType.SATURATION, duration, power), false);
+        }
+    }
+
+    public enum ToolDamage {
+        WOOD_SWORD(4, 4),
+        GOLD_SWORD(4, 4),
+        STONE_SWORD(5, 5),
+        IRON_SWORD(6, 6),
+        DIAMOND_SWORD(7, 7),
+        WOOD_AXE(3, 7),
+        GOLD_AXE(3, 7),
+        STONE_AXE(4, 9),
+        IRON_AXE(5, 9),
+        DIAMOND_AXE(6, 9),
+        WOOD_PICKAXE(2, 2),
+        GOLD_PICKAXE(2, 2),
+        STONE_PICKAXE(3, 3),
+        IRON_PICKAXE(4, 4),
+        DIAMOND_PICKAXE(5, 5),
+        WOOD_SPADE(1, 2),
+        GOLD_SPADE(1, 2),
+        STONE_SPADE(2, 3),
+        IRON_SPADE(3, 3),
+        DIAMOND_SPADE(4, 4);
+
+        int pre, post;
+
+        ToolDamage(int pre, int post) {
+            this.pre = pre;
+            this.post = post;
+        }
+
+        public int pre19() {
+            return pre;
+        }
+
+        public int post19() {
+            return post;
+        }
+
+        public int get() {
+            return Utils.usesVersionBetween("1.4.x", "1.8.x") ? pre19() : post19();
         }
     }
 }

@@ -103,6 +103,7 @@ public enum MessagesYML {
     public enum Errors {
         NO_PERMISSION("no-permission"),
         NOT_ONLINE("not-online"),
+        NEVER_PLAYED("never-played"),
         ITEM_INVALID_CURRENCY("item-invalid-currency"),
         INVALID_CURRENCY("invalid-currency"),
         INVALID_SHOP("invalid-shop"),
@@ -124,7 +125,10 @@ public enum MessagesYML {
         REQUIRE_ONE_SLOT("require-one-slot"),
         NO_STORED_CURRENCY("no-stored-currency"),
         COOLDOWN("cooldown"),
-        TOO_FAST("too-fast");
+        TOO_FAST("too-fast"),
+        UNREPAIRABLE("unrepairable"),
+        CURRENCY_CANNOT_USE_ENDERCHEST("currency-cannot-use-enderchest"),
+        PREVENT_ITEM_LOSS("prevent-item-loss");
 
         String output;
         FileConfiguration messages;

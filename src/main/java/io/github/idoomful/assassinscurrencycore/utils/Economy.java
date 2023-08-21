@@ -17,14 +17,34 @@ public class Economy {
     private static final FileConfiguration settings = DMain.getInstance().getConfigs().getFile("settings");
 
     public static class Currency {
+        /**
+         * Returns a list of all currency IDs.
+         *
+         * @return a list of all the available currency IDs in the config file
+         */
         public static List<String> getIDs() {
             return new ArrayList<>(settings.getConfigurationSection("currencies").getKeys(false));
         }
 
+        /**
+         * Checks if the given ID is a valid currency ID.
+         *
+         * @param id The currency ID to check against
+         * @return true, if this currency ID exists in the config file, false otherwise
+         */
         public static boolean hasID(String id) {
             return getIDs().contains(id);
         }
 
+        /**
+         * Creates an ItemStack that represents the currency with the given ID.
+         * This method doesn't return a valid currency item since it's not marked.
+         * Use Economy#Currency#getMarkedItem(String id, int amount) for a valid item.
+         *
+         * @param id The ID of the currency
+         * @param amount The amount that will be in the returned ItemStack
+         * @return an ItemStack that will represent the currency with this ID
+         */
         public static ItemStack getItem(String id, int amount) {
             if(hasID(id)) {
                 ItemStack output = ItemBuilder.build(settings.getString(  "currencies." + id));
@@ -39,8 +59,38 @@ public class Economy {
             return def;
         }
 
+        /**
+         * Creates an ItemStack that represents the currency with the given ID.
+         * This item marks the ItemStack object with a NBT tag that will validate
+         * it as a fully fledged currency.
+         *
+         * @param id The ID of the currency
+         * @param amount The amount that will be in the returned ItemStack
+         * @return an ItemStack that will represent the currency with this ID
+         */
         public static ItemStack getMarkedItem(String id, int amount) {
             return NBTEditor.set(getItem(id, amount), id, "CurrencyId");
+        }
+
+        /**
+         * Takes an ItemStack object and checks if it is considered a currency.
+         *
+         * @param item The item that will be checked
+         * @return either an empty string, if the item is not a currency, or the ID of the currency
+         */
+        public static boolean isCurrency(ItemStack item) {
+            return NBTEditor.contains(item, "CurrencyId");
+        }
+
+        /**
+         * Takes an ItemStack object and gets the currency ID associated with it
+         *
+         * @param item The item that will be checked
+         * @return the currency ID associated to this ItemStack, or an empty string if the item is not a currency-marked item
+         */
+        public static String getCurrencyID(ItemStack item) {
+            if(isCurrency(item)) return NBTEditor.getString(item, "CurrencyId");
+            else return "";
         }
     }
 

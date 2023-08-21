@@ -132,6 +132,14 @@ public class Lite {
         }
     }
 
+    public void setToBank(String player, String currency, int amount) {
+        getBankInventory(player, map -> {
+            LinkedHashMap<String, Integer> output = new LinkedHashMap<>(map);
+            output.put(currency, amount);
+            setBankInventory(player, output);
+        });
+    }
+
     public void addToBank(String player, String currency, int amount) {
         getBankInventory(player, map -> {
             LinkedHashMap<String, Integer> output = new LinkedHashMap<>(map);

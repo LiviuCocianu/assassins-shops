@@ -3,12 +3,12 @@ shops:
     title: "Shop » Combat"
     items:
       'goldensword':
-        icon: "id:golden_sword"
+        icon: "id:golden_sword unbreaking:1"
 
         # Place the currencies you want to charge the player with
         # Format: <amount> <currency_id>
         prices:
-          - "16 bronze"
+          - "48 bronze"
 
         # Give the icon item to the player
         give-itself: true
@@ -23,12 +23,12 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de aur&a!"
       'woodsword':
-        icon: "id:wooden_sword"
+        icon: "id:wooden_sword unbreaking:1"
 
         # Place the currencies you want to charge the player with
         # Format: <amount> <currency_id>
         prices:
-          - "32 bronze"
+          - "1 silver"
 
         # Give the icon item to the player
         give-itself: true
@@ -43,58 +43,59 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de lemn&a!"
       'stonesword':
-        icon: "id:stone_sword"
+        icon: "id:stone_sword unbreaking:1"
         prices:
-          - "1 silver"
+          - "2 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de piatra&a!"
       'ironsword':
-        icon: "id:iron_sword"
+        icon: "id:iron_sword unbreaking:1"
         prices:
           - "5 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de fier&a!"
+      'tomahawk':
+        icon: "id:iron_axe hideFlags name:&dTomahawk lore:&8Arma_pentru_donatori|&7|&7Acest_topor_arata_perfect_normal,_insa|&7poate_fi_aruncat_ca_un_proiectil,_dand|&7damage_tuturor_care_sunt_in_calea|&7lui_in_functie_de_damage-ul_toporului|&7|&8Cooldown_de_2_secunde!"
+        prices:
+          - "7 silver"
+        give-itself: false
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Tomahawk&a!"
+          - "ag $player$ 7"
       'diamondsword':
         icon: "id:diamond_sword"
         prices:
-          - "2 gold"
+          - "3 gold"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Sabie de diamant&a!"
       'bow':
         icon: "id:bow"
         prices:
-          - "5 silver"
+          - "4 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Arc&a!"
-      'arrow':
-        icon: "id:arrow"
-        prices:
-          - "5 bronze"
-        give-itself: true
-        commands:
-          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sageata&a!"
       'lhelmet':
         icon: "id:leather_helmet"
         prices:
-          - "32 bronze"
+          - "48 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Casca de piele&a!"
       'lchest':
         icon: "id:leather_chestplate"
         prices:
-          - "32 bronze"
+          - "1 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta de piele&a!"
       'lleggings':
         icon: "id:leather_leggings"
         prices:
-          - "32 bronze"
+          - "48 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni de piele&a!"
@@ -115,21 +116,21 @@ shops:
       'cchest':
         icon: "id:chainmail_chestplate"
         prices:
-          - "1 silver"
+          - "2 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta din lant&a!"
       'cleggings':
         icon: "id:chainmail_leggings"
         prices:
-          - "1 silver"
+          - "2 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni din lant&a!"
       'cboots':
         icon: "id:chainmail_boots"
         prices:
-          - "1 silver"
+          - "48 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Cisme din lant&a!"
@@ -143,21 +144,21 @@ shops:
       'ichest':
         icon: "id:iron_chestplate"
         prices:
-          - "2 silver"
+          - "3 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta de fier&a!"
       'ileggings':
         icon: "id:iron_leggings"
         prices:
-          - "2 silver"
+          - "3 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni de fier&a!"
       'iboots':
         icon: "id:iron_boots"
         prices:
-          - "2 silver"
+          - "1 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Cisme de fier&a!"
@@ -171,14 +172,14 @@ shops:
       'dchest':
         icon: "id:diamond_chestplate"
         prices:
-          - "1 gold"
+          - "3 gold"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Vesta de diamant&a!"
       'dleggings':
         icon: "id:diamond_leggings"
         prices:
-          - "1 gold"
+          - "2 gold"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Pantaloni de diamant&a!"
@@ -197,34 +198,34 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Blowpipe&a!"
           - "ag $player$ 5 20"
+      'dagger':
+        icon: "id:golden_sword:32 hideFlags sharpness:100 nbt-int:Unrepairable:1 name:&6Pumnalul_lui_Mehrunes lore:&7Aceasta_arma_este_temuta_pentru_daunele|&7imense_pe_care_le_poate_cauza!|&7Poti_omora_orice_jucator_intr-o_lovitura|&7insa_pumnalul_se_va_strica_imediat!"
+        prices:
+          - "5 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Pumnalul lui Mehrunes&a!"
   consumables:
     title: "Shop » Consumabile"
     items:
-      'milk':
-        icon: "id:milk_bucket"
-        prices:
-          - "16 bronze"
-        give-itself: true
-        commands:
-          - "[message] $prefix$&aAi cumparat &fx$quantity$ Lapte&a!"
       'apple':
         icon: "id:apple"
         prices:
-          - "16 bronze"
+          - "8 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar&a!"
       'bread':
         icon: "id:bread"
         prices:
-          - "20 bronze"
+          - "16 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Paine&a!"
       'steak':
         icon: "id:cooked_beef"
         prices:
-          - "25 bronze"
+          - "24 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Carne&a!"
@@ -254,7 +255,7 @@ shops:
       'gapple1':
         icon: "id:golden_apple"
         prices:
-          - "3 silver"
+          - "1 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Mar de aur normal&a!"
@@ -268,17 +269,31 @@ shops:
       'pearl':
         icon: "id:ender_pearl"
         prices:
-          - "5 silver"
+          - "2 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Perla&a!"
+      'arrow':
+        icon: "id:arrow"
+        prices:
+          - "8 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Sageata&a!"
       'xpbottle':
         icon: "id:experience_bottle"
         prices:
-          - "32 bronze"
+          - "5 bronze"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Flacon cu experienta&a!"
+      'tome':
+        icon: 'id:book name:&5Tomul_saraciei lore:&8Loveste-ti_tinta_pentru_efect|&7|&d&o"Bogatia_devine_un_pacat_atunci_cand|&d&oavutiile_il_ispitesc_pe_om_sa_fie_eretic."|&7|&7Aceasta_carte_poate_fi_folosita_de|&7catre_incepatori_pentru_a-i_incetini|&7temporar_de_cei_mai_avansati_decat_tine.|&7|&7Proportionalitatea_dintre_statutul_tintei|&7si_timpul_efectului_cartii_este_directa!|&7|&cCartea_va_avea_mai_putin_efect_daca|&ctu_insuti_nu_esti_considerat_"sarac"!|&7|&8Cooldown_de_30_secunde! nbt-string:GadgetName:tome-of-poverty'
+        prices:
+          - "1 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Tomul saraciei&a!"
       'regen':
         icon: "id:potion:8225"
         prices:
@@ -287,16 +302,16 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Regeneration'&a!"
       'heal':
-        icon: "id:potion:8229"
+        icon: "id:splash_potion effect:instant_health/2/0"
         prices:
-          - "5 silver"
+          - "2 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Instant Health'&a!"
       'harm':
         icon: "id:splash_potion effect:instant_damage/2/0"
         prices:
-          - "4 silver"
+          - "3 silver"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune Splash 'Instant Damage'&a!"
@@ -307,6 +322,118 @@ shops:
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Potiune 'Strength'&a!"
+      'whitedye':
+        icon: "id:dye:15"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Bone Meal&a!"
+      'orangedye':
+        icon: "id:dye:14"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Orange Dye&a!"
+      'magentadye':
+        icon: "id:dye:5"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Magenta Dye&a!"
+      'lightbluedye':
+        icon: "id:dye:12"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Light Blue Dye&a!"
+      'yellowdye':
+        icon: "id:dye:11"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Yellow Dye&a!"
+      'limedye':
+        icon: "id:dye:10"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Lime Dye&a!"
+      'pinkdye':
+        icon: "id:dye:9"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Pink Dye&a!"
+      'graydye':
+        icon: "id:dye:8"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Gray Dye&a!"
+      'lightgraydye':
+        icon: "id:dye:7"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Light Gray Dye&a!"
+      'cyandye':
+        icon: "id:dye:6"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cyan Dye&a!"
+      'purpledye':
+        icon: "id:dye:5"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Purple Dye&a!"
+      'bluedye':
+        icon: "id:dye:4"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Blue Dye&a!"
+      'browndye':
+        icon: "id:dye:3"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Brown Dye&a!"
+      'greendye':
+        icon: "id:dye:2"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Green Dye&a!"
+      'reddye':
+        icon: "id:dye:1"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Red Dye&a!"
+      'blackdye':
+        icon: "id:dye:0"
+        prices:
+          - "1 bronze"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Black Dye&a!"
   utilities:
     title: "Shop » Utilitati"
     items:
@@ -318,16 +445,16 @@ shops:
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Speraclu&a!"
       'icepick':
-        icon: "id:iron_hoe unbreakable hideFlags name:&f&lPiolet lore:&8Instrument_folosit_pentru_escaladari|&7Stai_aproape_de_un_perete_si_apasa|&7click_dreapta_repetat_pentru_a_escalada."
+        icon: "id:iron_hoe unbreakable hideFlags nbt-string:GadgetName:icepick name:&f&lPiolet lore:&8Instrument_folosit_pentru_escaladari|&7Stai_aproape_de_un_perete_si_apasa|&7click_dreapta_repetat_pentru_a_escalada."
         prices:
           - "1 gold"
         give-itself: true
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Piolet&a!"
       'hook':
-        icon: "id:fishing_rod unbreakable hideFlags name:&f&lCarlig_tactic lore:&7Foloseste_carligul_in_directia_dorita|&7si_trage_pentru_a_te_lansa!|&7|&8Cooldown_de_2_secunde!|&7|&9Utilizari:&b_100"
+        icon: "id:fishing_rod unbreakable hideFlags name:&f&lCarlig_tactic lore:&7Foloseste_carligul_in_directia_dorita|&7si_trage_pentru_a_te_lansa!|&7|&7Te_poti_lansa_in_sus_pentru|&7a_te_deplasa_mai_usor_daca_tii|&7apasat_SHIFT_si_tragi!|&7|&8Cooldown_de_5_secunde!|&7|&9Utilizari:&b_100"
         prices:
-          - "3 gold"
+          - "4 gold"
         give-itself: false
         commands:
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Carlig tactic&a!"
@@ -335,9 +462,164 @@ shops:
       'wallet':
         icon: "id:skull:3 name:&dPortofel lore:&7Acest_item_iti_poate_depozita_monedele|&7si_le_poate_tine_in_siguranta_de_orice|&7jucator_care_si-a_propus_sa_te_omoare.|&7Fiecare_portofel_are_un_inventar_propriu urlCode:eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzk1YjhkYWU5NmUzOWE3YjQ3NDU2OTdlZmIxZGU2ODFlNWZkOTRkNzUwYWIwOWNiOWYyM2ZmN2U3MmEyYTMzZSJ9fX0="
         prices:
-          - "5 gold"
+          - "6 gold"
         give-itself: false
         stackable: false
         commands:
           - "ascurr item $player$ wallet $quantity$"
           - "[message] $prefix$&aAi cumparat &fx$quantity$ Portofel&a!"
+  enchants:
+    title: "Shop » Enchant-uri"
+    items:
+      'knockback':
+        icon: "id:enchanted_book knockback:2"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Knockback II&a!"
+      'fire_aspect':
+        icon: "id:enchanted_book fire_aspect:2"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Fire Aspect II&a!"
+      'dstrider':
+        icon: "id:enchanted_book depth_strider:3"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+      'punch':
+        icon: "id:enchanted_book punch:2"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Punch II&a!"
+      'flame':
+        icon: "id:enchanted_book flame:1"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Flame I&a!"
+      'thorns':
+        icon: "id:enchanted_book thorns:3"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Thorns III&a!"
+      'fireprot':
+        icon: "id:enchanted_book fire_protection:4"
+        prices:
+          - "3 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Fire Protection IV&a!"
+      'prot':
+        icon: "id:enchanted_book protection:4"
+        prices:
+          - "4 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Protection IV&a!"
+      'unbr':
+        icon: "id:enchanted_book unbreaking:3"
+        prices:
+          - "4 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Unbreaking III&a!"
+      'featherfalling':
+        icon: "id:enchanted_book feather_falling:4"
+        prices:
+          - "4 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Feather Falling IV&a!"
+      'power':
+        icon: "id:enchanted_book power:5"
+        prices:
+          - "4 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Power V&a!"
+      'infinity':
+        icon: "id:enchanted_book infinity:1"
+        prices:
+          - "4 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Infinity I&a!"
+      'sharpness':
+        icon: "id:enchanted_book sharpness:5"
+        prices:
+          - "6 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Carte Sharpness V&a!"
+  keys:
+    title: "Shop » Chei crates"
+    items:
+      'edward':
+        icon: "id:flint luck_of_the_sea:1 hideFlags nbt-string:CrazyCrates-Crate:edward name:&9Cheie_Crate lore:&8Obtinuta_la_event-uri_sau|&8de_la_crate-ul_Vote||&7Tip_crate:_&a&lCOMMON||&f&nDescriere|&7Viziteaza_crate-ul_&aCommon&7_de_la|&7spawn_si_foloseste_cheia_acolo"
+        prices:
+          - "4 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cheie Crate Common&a!"
+      'altair':
+        icon: "id:flint luck_of_the_sea:1 hideFlags nbt-string:CrazyCrates-Crate:altair name:&9Cheie_Crate lore:&8Obtinuta_la_event-uri_sau_de_la|&8crate-ul_Common/Uncommon/Rare||&7Tip_crate:_&d&lUNCOMMON||&f&nDescriere|&7Viziteaza_crate-ul_&dUncommon&7_de_la|&7spawn_si_foloseste_cheia_acolo"
+        prices:
+          - "8 silver"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cheie Crate Uncommon&a!"
+      'ezio':
+        icon: "id:flint luck_of_the_sea:1 hideFlags nbt-string:CrazyCrates-Crate:ezio name:&9Cheie_Crate lore:&8Obtinuta_la_event-uri_sau|&8de_la_crate-ul_Common/Uncommon||&7Tip_crate:_&b&lRARE||&f&nDescriere|&7Viziteaza_crate-ul_&bRare&7_de_la|&7spawn_si_foloseste_cheia_acolo"
+        prices:
+          - "1 gold"
+        give-itself: true
+        commands:
+          - "[message] $prefix$&aAi cumparat &fx$quantity$ Cheie Crate Rare&a!"
+  enchanter:
+    title: "Shop » Enchanting"
+    items:
+      'blackscroll1':
+        icon: "id:paper name:&f&lPergament_Negru lore:&8Pune_pergamentul_pe_un_item|&8pentru_a_incepe_extragerea|_|&f&nDescriere|&7Elimina_un_enchant_custom_aleator_de|&7pe_un_item_si_il_converteste_intr-o|&7carte_cu_sansa_de_succes_&f5% nbt-string:success:5"
+        prices:
+          - "16 bronze"
+        give-itself: false
+        commands:
+          - "ae giveitem $player$ blackscroll 1 5"
+      'blackscroll2':
+        icon: "id:paper name:&f&lPergament_Negru lore:&8Pune_pergamentul_pe_un_item|&8pentru_a_incepe_extragerea|_|&f&nDescriere|&7Elimina_un_enchant_custom_aleator_de|&7pe_un_item_si_il_converteste_intr-o|&7carte_cu_sansa_de_succes_&f25% nbt-string:success:25"
+        prices:
+          - "2 silver"
+        give-itself: false
+        commands:
+          - "ae giveitem $player$ blackscroll 1 25"
+      'blackscroll3':
+        icon: "id:paper name:&f&lPergament_Negru lore:&8Pune_pergamentul_pe_un_item|&8pentru_a_incepe_extragerea|_|&f&nDescriere|&7Elimina_un_enchant_custom_aleator_de|&7pe_un_item_si_il_converteste_intr-o|&7carte_cu_sansa_de_succes_&f75% nbt-string:success:75"
+        prices:
+          - "4 silver"
+        give-itself: false
+        commands:
+          - "ae giveitem $player$ blackscroll 1 75"
+      'stattrak':
+        icon: "id:magma_cream name:&d&lAccesoriu_StatTrak lore:&8Pune_accesoriul_pe_un_item|&8pentru_a_aplica|_|&f&nDescriere|&7Urmareste_cati_jucatori_ai_ucis_cu|&7arma_pe_care_aplici_accesoriul"
+        prices:
+          - "2 silver"
+        give-itself: false
+        commands:
+          - "ae giveitem $player$ stattrak 1"
+      'mobtrak':
+        icon: "id:magma_cream name:&d&lAccesoriu_MobTrak lore:&8Pune_accesoriul_pe_un_item|&8pentru_a_aplica|_|&f&nDescriere|&7Urmareste_cati_mobi_ai_ucis_cu|&7arma_pe_care_aplici_accesoriul"
+        prices:
+          - "2 silver"
+        give-itself: false
+        commands:
+          - "ae giveitem $player$ mobtrak 1"

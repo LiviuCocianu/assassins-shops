@@ -218,8 +218,28 @@ public class Utils {
         return output;
     }
 
+    /**
+     * Checks if the items have the same type, name and lore
+     * @param item1 First item
+     * @param item2 Second item
+     */
+    public static boolean isLookingSimilar(ItemStack item1, ItemStack item2) {
+        if(isWeakSimilar(item1, item2)) {
+            if(!item1.getItemMeta().hasLore() || !item2.getItemMeta().hasLore()) return false;
+            return item1.getItemMeta().getLore().containsAll(item2.getItemMeta().getLore());
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the items have the same type and name
+     * @param item1 First item
+     * @param item2 Second item
+     */
     public static boolean isWeakSimilar(ItemStack item1, ItemStack item2) {
         if(item1.getType().equals(item2.getType())) {
+            if(!item1.hasItemMeta() || !item2.hasItemMeta()) return false;
+            if(!item1.getItemMeta().hasDisplayName() || !item2.getItemMeta().hasDisplayName()) return false;
             return item2.getItemMeta().getDisplayName().equalsIgnoreCase(item2.getItemMeta().getDisplayName());
         }
         return false;

@@ -12,6 +12,10 @@ currency-worths:
   'gold_bag': "10 gold"
   'crystal': "10 gold_bag"
 
+options:
+  # Prevent players from storing currency in enderchests
+  prevent-enderchest-storing: true
+
 top-options:
   # If the player doesn't specify what currency to display the
   # top for, it will default to this value
@@ -106,14 +110,15 @@ bank-inventory-options:
 repair-costs:
   # For all items that have durability
   durability:
-    durability-given: 100
+    #durability-given: 1
+    # The amount to take per missing durability point
     costs:
-      - "1 silver"
+      - "1 bronze"
 
   # Only works if you have AtomGadgets
   # These are the costs for replenishing uses of gadgets
   gadgets:
-  # The ID of the targeted gadget
+    # The ID of the targeted gadget
     'grappling-hook':
       uses-given: 10
       costs:

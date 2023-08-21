@@ -39,6 +39,22 @@ public enum SettingsYML {
         return ItemBuilder.build(settings.getString(path));
     }
 
+    public enum Options {
+        PREVENT_ENDERCHEST_STORING("prevent-enderchest-storing");
+
+        public String path;
+        public FileConfiguration settings;
+
+        Options(String string) {
+            this.path = "options." + string;
+            this.settings = SettingsYML._OPTIONS.settings;
+        }
+
+        public boolean getBoolean() {
+            return settings.getBoolean(path);
+        }
+    }
+
     public enum TopOptions {
         DEFAULT_CURRENCY("default-currency"),
         PER_PAGE("per-page"),
@@ -203,7 +219,7 @@ public enum SettingsYML {
             this.settings = SettingsYML._OPTIONS.settings;
         }
 
-        public String getString(Player player) {
+        public String getString(OfflinePlayer player) {
             return Utils.placeholder(player, settings.getString(path));
         }
         public int getInt() {

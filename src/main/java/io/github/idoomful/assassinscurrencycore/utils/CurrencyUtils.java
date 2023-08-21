@@ -13,12 +13,65 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CurrencyUtils {
     public enum ConvertWay {
         UP, DOWN
     }
 
+    /**
+     * Gets all the currency quantities from the bank of the player
+     *
+     * @param player The name of the targeted player
+     * @return a map that contains all currencies and how much of any the player has in their bank
+     */
+    public static LinkedHashMap<String, Integer> getBank(String player) {
+        AtomicReference<LinkedHashMap<String, Integer>> output = new AtomicReference<>();
+        DMain.getInstance().getSQL().getBankInventory(player, output::set);
+        return output.get();
+    }
+
+    /**
+     * Overrides the amount of currecy the target has in their bank with this amount
+     *
+     * @param player The name of the targeted player
+     * @param currency The currency ID
+     * @param amount The amount to set
+     */
+    public static void setToBank(String player, String currency, int amount) {
+        DMain.getInstance().getSQL().setToBank(player, currency, amount);
+    }
+
+    /**
+     * Adds this amount of the specified currency to the target's bank
+     *
+     * @param player The name of the targeted player
+     * @param currency The currency ID
+     * @param amount The amount to add
+     */
+    public static void addToBank(String player, String currency, int amount) {
+        DMain.getInstance().getSQL().addToBank(player, currency, amount);
+    }
+
+    /**
+     * Subtracts this amount of the specified currency from the target's bank
+     *
+     * @param player The name of the targeted player
+     * @param currency The currency ID
+     * @param amount The amount to add
+     */
+    public static void subtractFromBank(String player, String currency, int amount) {
+        DMain.getInstance().getSQL().subtractFromBank(player, currency, amount);
+    }
+
+    /**
+     *
+     * @param currency The currency to search for
+     * @param amount The amount to withdraw
+     * @param player The name of the target to withdraw from
+     * @return whether the withdrawal was successful or not
+     */
     public static boolean withdrawCurrency(String currency, int amount, Player player) {
         ItemStack[] items = player.getInventory().getContents();
 
@@ -119,6 +172,14 @@ public class CurrencyUtils {
         return false;
     }
 
+    /**
+     * Searches for currency to convert in the specified sense in the inventory of the target.
+     *
+     * @param player The name of the target
+     * @param way The sense of conversion. UP for conversions that take the least valuable currency
+     *            in the inventory of the player and converts it to the next most valuable one, and
+     *            DOWN for the opposite.
+     */
     public static void convert(Player player, ConvertWay way) {
         AtomicBoolean reached = new AtomicBoolean(false);
 
@@ -243,6 +304,14 @@ public class CurrencyUtils {
         }
     }
 
+    /**
+     * Withdraws every currency in the provided list from the target
+     *
+     * @param player The affected target
+     * @param costs A list of ConfigPair that take an amount and a currency ID
+     * @param message A toggle for whether the method should announce the target the withdrawal failed or not
+     * @return a map that contains the withdrawn currency that is only empty when the withdrawal is successful
+     */
     public static HashMap<String, Integer> withdrawCosts(Player player, List<ConfigPair<Integer, String>> costs, boolean message) {
         HashMap<String, Integer> withdrawnBackup = new HashMap<>();
 
@@ -264,6 +333,14 @@ public class CurrencyUtils {
         return withdrawnBackup;
     }
 
+    /**
+     * Withdraws every currency in the provided list from the target and multiply each amount to the provided multiplier
+     *
+     * @param player The affected target
+     * @param costs A list of ConfigPair that take an amount and a currency ID
+     * @param mult A number that will be multiplied by the amount of each provided currency
+     * @return whether the withdrawal was successful or not
+     */
     public static boolean withdrawMultipliedCosts(Player player, List<ConfigPair<Integer, String>> costs, int mult) {
         HashMap<String, Integer> withdrawnBackup = new HashMap<>();
 
@@ -289,6 +366,14 @@ public class CurrencyUtils {
         return true;
     }
 
+    /**
+     * Searches through the inventory of the targeted player and checks if they have at least all the
+     * provided currencies in the inventory.
+     *
+     * @param player The targeted player
+     * @param currencies The currencies with their amounts to search for
+     * @return whether all the provided currencies are found in the inventory of the target
+     */
     public static boolean hasAllCurrencies(Player player, List<ConfigPair<Integer, String>> currencies) {
         HashMap<String, Integer> playerCurr = new HashMap<>();
 
@@ -311,6 +396,13 @@ public class CurrencyUtils {
         return true;
     }
 
+    /**
+     * Returns the the amount of the provided ItemStack that can fit in the provided inventory
+     *
+     * @param inventory The inventory to search through
+     * @param item An ItemStack that is used as a filter
+     * @return the amount of the provided filter that can fit in the provided inventory
+     */
     public static int getItemSpace(Inventory inventory, ItemStack item) {
         int count = 0;
 
@@ -322,6 +414,15 @@ public class CurrencyUtils {
         return count;
     }
 
+    /**
+     * Returns the currency ID of the first most valuable or least valuable (depending on direction) currency
+     * that can be found in the inventory of the target.
+     *
+     * @param player The target whose inventory will be checked
+     * @param direction The value direction
+     * @return the currency ID of the first most valuable or least valuable (depending on direction) currency
+     * that can be found in the inventory of the target
+     */
     private static String getFirstCurrencyType(Player player, ConvertWay direction) {
         String output = "";
 
@@ -341,6 +442,13 @@ public class CurrencyUtils {
         return output;
     }
 
+    /**
+     * Returns whether there is enough of the provided currency to convert to the next most valuable currency
+     *
+     * @param player The target whose inventory is checked
+     * @param currency The currency to search for
+     * @return whether there is enough of the provided currency to convert to the next most valuable currency
+     */
     private static boolean hasEnoughToConvert(Player player, String currency) {
         int total = 0;
 
@@ -361,6 +469,13 @@ public class CurrencyUtils {
         return total >= Objects.requireNonNull(Economy.Worth.getWorth(above)).getKey();
     }
 
+    /**
+     * Returns the amount of currency found in the provided inventory
+     *
+     * @param currency The currency to search for
+     * @param inventory The inventory to search in
+     * @return the amount of currency found in the provided inventory
+     */
     public static int getCurrencyAmount(String currency, Inventory inventory) {
         int amount = 0;
 
@@ -375,6 +490,68 @@ public class CurrencyUtils {
         }
 
         return amount;
+    }
+
+    /**
+     * Sets the provided currencies in the provided location
+     *
+     * @param inv The inventory where the wallet is
+     * @param slot The slot where the wallet is
+     * @param map The map of currency IDs and their amounts to be set in the wallet
+     */
+    public static void setWalletCurrencies(Inventory inv, int slot, HashMap<String, Integer> map) {
+        ItemStack wallet = inv.getItem(slot);
+        int size = 0;
+
+        for(Map.Entry<String, Integer> pair : map.entrySet()) {
+            wallet = NBTEditor.set(wallet, Math.max(0, pair.getValue()), pair.getKey());
+        }
+
+        for (String id : Economy.Currency.getIDs()) if (NBTEditor.contains(wallet, id)) size++;
+
+        if (Economy.Currency.getIDs().size() > size) {
+            for (String id : Economy.Currency.getIDs()) {
+                if (!NBTEditor.contains(wallet, id)) wallet = NBTEditor.set(wallet, 0, id);
+            }
+        }
+
+        inv.setItem(slot, wallet);
+        Utils.updateWalletLore(inv);
+    }
+
+    /**
+     * Returns the currencies inside the provided wallet ItemStack
+     *
+     * @param item The wallet ItemStack
+     * @return the currencies inside the provided wallet ItemStack
+     */
+    public static HashMap<String, Integer> getWalletCurrency(ItemStack item) {
+        HashMap<String, Integer> output = new HashMap<>();
+
+        Economy.Currency.getIDs().forEach(id -> output.put(id, 0));
+        if(isWallet(item)) Economy.Currency.getIDs().forEach(id -> output.put(id, NBTEditor.getInt(item, id)));
+
+        return output;
+    }
+
+    /**
+     * Returns whether the provided item is a wallet or not
+     *
+     * @param item The wallet ItemStack
+     * @return whether the provided item is a wallet or not
+     */
+    public static boolean isWallet(ItemStack item) {
+        return NBTEditor.contains(item, "WalletId");
+    }
+
+    /**
+     * Returns whether the provided wallet has any currency inside of it or not
+     *
+     * @param item The wallet ItemStack
+     * @return whether the provided wallet has any currency inside of it or not
+     */
+    public static boolean isWalletEmpty(ItemStack item) {
+        return getWalletCurrency(item).values().stream().noneMatch(amount -> amount > 0);
     }
 
     public static void createLogsFile() {

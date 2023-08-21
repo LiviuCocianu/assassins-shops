@@ -8,6 +8,7 @@ import io.github.idoomful.assassinscurrencycore.gui.Paginable;
 import io.github.idoomful.assassinscurrencycore.utils.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -18,9 +19,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class BankInventoryGUI extends Paginable implements MyGUI {
     private final Inventory inventory;
     private final Player player;
+    private final OfflinePlayer target;
 
     public BankInventoryGUI(Player player) {
         this.player = player;
+        this.target = player;
         inventory = Bukkit.createInventory(this,
                 SettingsYML.BankInventoryOptions.ROWS.getInt() * 9,
                 SettingsYML.BankInventoryOptions.TITLE.getString(player)
@@ -28,10 +31,25 @@ public class BankInventoryGUI extends Paginable implements MyGUI {
         openInventory(player);
     }
 
+    public BankInventoryGUI(Player player, OfflinePlayer target) {
+        this.player = player;
+        this.target = target;
+
+        inventory = Bukkit.createInventory(this,
+                SettingsYML.BankInventoryOptions.ROWS.getInt() * 9,
+                SettingsYML.BankInventoryOptions.TITLE.getString(target)
+        );
+        openInventory(player);
+    }
+
+    public OfflinePlayer getTarget() {
+        return target;
+    }
+
     @Override
     protected List<ItemStack> bodyList() {
         AtomicReference<LinkedHashMap<String, Integer>> map = new AtomicReference<>();
-        DMain.getInstance().getSQL().getBankInventory(player.getName(), map::set);
+        DMain.getInstance().getSQL().getBankInventory(target.getName(), map::set);
 
         List<ItemStack> output = new ArrayList<>();
 
@@ -80,13 +98,13 @@ public class BankInventoryGUI extends Paginable implements MyGUI {
 
     @Override
     protected ItemStack createNextButton() {
-        return ItemBuilder.build(SettingsYML.BankInventoryOptions.NEXT_PAGE_ICON.getString(player)
+        return ItemBuilder.build(SettingsYML.BankInventoryOptions.NEXT_PAGE_ICON.getString(target)
                 .replace("$page$", getPage() + ""));
     }
 
     @Override
     protected ItemStack createPreviousButton() {
-        return ItemBuilder.build(SettingsYML.BankInventoryOptions.PREVIOUS_PAGE_ICON.getString(player)
+        return ItemBuilder.build(SettingsYML.BankInventoryOptions.PREVIOUS_PAGE_ICON.getString(target)
                 .replace("$page$", getPage() + ""));
     }
 

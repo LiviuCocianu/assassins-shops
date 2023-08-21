@@ -37,6 +37,7 @@ scales:
 errors:
   no-permission: "&cNu ai permisiunea sa faci asta!"
   not-online: "&cJucatorul trebuie sa fie online"
+  never-played: "&cAcest jucator nu s-a jucat niciodata pe server"
   item-invalid-currency: "&cValuta invalida"
   invalid-currency: "&cValuta specificata nu exista in configuratie"
   invalid-shop: "&cNu exista o categorie de shop cu acest nume"
@@ -59,6 +60,9 @@ errors:
   no-stored-currency: "&cNu ai depozitat nimic, pune niste monede in banca si incearca din nou"
   cooldown: "&cTrebuie sa astepti $cooldown$ secunde pentru a face asta"
   too-fast: "&cMuti monede in portofel prea rapid, incearca mai incet"
+  unrepairable: "&cAcest item nu poate fi reparat"
+  currency-cannot-use-enderchest: "&cNu poti depozita monede in enderchest, foloseste depozitul bancii sau un &ePortofel"
+  prevent-item-loss: "&cTi-am inchis inventarul pentru a preveni pierderea accidentala de iteme"
 lists:
   help:
     - "&7&m-*----------&e  AssassinsCurrencyCore  &7&m---------*-"
@@ -99,6 +103,10 @@ lists:
     - "&9  /currency inventory/inv <player>"
     - "&8&o  Deschide meniul de vizualizare a monezilor"
     - "&8&o  din banca jucatorul specificat pentru el."
+    - ""
+    - "&9  /currency bank <player>"
+    - "&8&o  Deschide meniul de vizualizare a monezilor"
+    - "&8&o  din banca al jucatorului specificat."
     - ""
     - "&9  /currency set <player> <currency> <amount>"
     - "&8&o  Seteaza o valuta in banca jucatorului"
